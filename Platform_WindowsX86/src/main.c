@@ -1,5 +1,5 @@
 /**
- * \file template.c
+ * \file main.c
  *
  * \brief Template source file
  *
@@ -7,43 +7,49 @@
  * notation.
  *
  * \project BlueMarlin
- * \author <FULL NAME>
+ * \author kein0r
  *
  */
 
-
-/** \addtogroup Template
+/** \addtogroup Platform_WindowsX86
  * @{
  */
 
 /* ******************| Inclusions |************************************ */
-#include "template.h"
+#include <time.h>
+#include "platform.h"
 
 /* ******************| Macros |**************************************** */
 
 /* ******************| Type Definitions |****************************** */
 
 /* ******************| Function Prototypes |*************************** */
-int Template_templateFunction(int i, int *s);
-
 
 /* ******************| Global Variables |****************************** */
 
 /* ******************| Function Implementation |*********************** */
-/**
- * \brief Template function
- * Document your function here. Function names shall start with module names
- * followed by an underscore followed by the function name starting with a 
- * lowercase letter using cammelCase notion.
- * Dont' forget to also describe the parameters of your function including
- * their direction. Also describe the return values, if any.
- * @param[in]  		i	Example input parameter
- * @param[in/out]	i	Example input/output parameter
- * @return			This function returns result X
-*/
-int Template_templateFunction(int i, int *s)
+
+/*
+ * \brief main function to be implemented by each platform
+ *
+ * The main purpose of the main function will be to trigger the loop init and loop 
+ * functions known from Aruduino framework.
+ * As this is the main function it obviously does not use the existing naming
+ * conventions.
+ *
+ * @return return value to Os
+ */
+int main()
 {
-	return i;
+  /* Call init function normally used by Aurduino framework */
+  init();
+
+  /* enter forever loop */
+  while (1)
+  {
+    loop();
+  }
+  return 0;
 }
 
 /** @} doxygen end group definition */

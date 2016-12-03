@@ -1,21 +1,19 @@
-#if (!defined TEMPLATE_INCLUDE_TEMPLATE_H_)
+#if (!defined PLATFORM_INCLUDE_TEMPLATE_H_)
 /* Preprocessor exclusion definition */
-#define TEMPLATE_INCLUDE_TEMPLATE_H_
+#define PLATFORM_INCLUDE_TEMPLATE_H_
 /**
- * \file Template.h
+ * \file platform.h
  *
- * \brief Template include file
+ * \brief Platform module include file
  *
- * Include files should start with a lowercase character and use cammelCase
- * notation.
+ * The inclusion protection does not obey the naming because there shall
+ * be only one platform used at a time.
  *
  * \project BlueMarlin
- * \author <FULL NAME>
+ * \author kein0r
  *
  */
-
-
-/** \addtogroup Template
+/** \addtogroup Platform_WindowsX86
  * @{
  */
 
@@ -26,11 +24,13 @@
 /* ******************| Type definitions |****************************** */
 
 /* ******************| External function declarations |**************** */
+void init(void);
+void loop(void);
 
 /* ******************| External constants |**************************** */
 
 /* ******************| External variables |**************************** */
 
 /** @} doxygen end group definition */
-#endif /* if !defined( TEMPLATE_INCLUDE_TEMPLATE_H_ ) */
+#endif /* if !defined( PLATFORM_INCLUDE_TEMPLATE_H_ ) */
 /* ******************| End of file |*********************************** */
