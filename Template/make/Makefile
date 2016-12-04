@@ -27,10 +27,10 @@ $(MODULE_NAME)_CC_FILES := $(wildcard $($(MODULE_NAME)_MODULE_PATH)/src/*.c)
 #
 # Add all .cpp files from source directory of this modules to the list files to be
 # compiled.
-$(MODULE_NAME)_CPP_FILES += $(wildcard $(Template_MODULE_PATH)/src/*.cpp)
+$(MODULE_NAME)_CPP_FILES := $(wildcard $($(MODULE_NAME)_MODULE_PATH)/src/*.cpp)
 #
 # Add include directory to list of include directories for c source files
-$(MODULE_NAME)_CC_INCLUDE += -I$(Template_MODULE_PATH)/include
+$(MODULE_NAME)_CC_INCLUDE := -I$($(MODULE_NAME)_MODULE_PATH)/include
 #
 # Add include directory to list of include directories for cpp source files
-$(MODULE_NAME)_CPP_INCLUDE += -I$(Template_MODULE_PATH)/include
+$(MODULE_NAME)_CPP_INCLUDE := -I$($(MODULE_NAME)_MODULE_PATH)/include

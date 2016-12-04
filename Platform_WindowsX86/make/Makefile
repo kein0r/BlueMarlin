@@ -1,9 +1,12 @@
-# \file
+# \file Makefile
 #
 # \brief Makefile for module Platform_WindowsX86
 # 
 # This makefile is based is based on template makefile, however, it will add 
 # quite a few extras in order to make compilation of source files possible.
+# Automatic dependency calculation was taken from 
+# http://make.mad-scientist.net/papers/advanced-auto-dependency-generation/
+# and adapted to this project
 #
 # \author kein0r
 #
@@ -26,13 +29,13 @@ $(MODULE_NAME)_CC_FILES := $(wildcard $($(MODULE_NAME)_MODULE_PATH)/src/*.c)
 #
 # Add all .cpp files from source directory of this modules to the list files to be
 # compiled.
-$(MODULE_NAME)_CPP_FILES += $(wildcard $(Platform_WindowsX86_MODULE_PATH)/src/*.cpp)
+$(MODULE_NAME)_CPP_FILES := $(wildcard $($(MODULE_NAME)_MODULE_PATH)/src/*.cpp)
 #
 # Add include directory to list of include directories for c source files
-$(MODULE_NAME)_CC_INCLUDE += -I$(Platform_WindowsX86_MODULE_PATH)/include
+$(MODULE_NAME)_CC_INCLUDE := -I$($(MODULE_NAME)_MODULE_PATH)/include
 #
 # Add include directory to list of include directories for cpp source files
-$(MODULE_NAME)_CPP_INCLUDE += -I$(Platform_WindowsX86_MODULE_PATH)/include
+$(MODULE_NAME)_CPP_INCLUDE := -I$($(MODULE_NAME)_MODULE_PATH)/include
 
 #
 # The following lines are only important in platform modules
@@ -52,40 +55,90 @@ CC_INCLUDE = $(foreach MODULE, $(MODULES), $($(MODULE)_CC_INCLUDE))
 CPP_INCLUDE = $(foreach MODULE, $(MODULES), $($(MODULE)_CPP_INCLUDE))
 
 #
+# Only one list is used to store all to be generated object files for
+# c files and c++ files.
 # Generate list of .o files to be created from c files
 # Change file suffix from .c to .o
 CC_TO_OBJ_TO_BUILD = $(addsuffix .o,$(basename $(CC_FILES)))
+#
+# Add a list of .o files to be created from cpp files
+# Change file suffix from .cpp to .o
+CC_TO_OBJ_TO_BUILD += $(addsuffix .o,$(basename $(CPP_FILES)))
+#
+# Generate list of dependency makefile files
+# Change file suffix from .c to .d
+CC_DEP_FILES = $(addsuffix .d,$(basename $(CC_FILES)))
+#
+# Generate list of dependency makefile files
+# Change file suffix from .cpp to .d
+CPP_DEP_FILES = $(addsuffix .d,$(basename $(CPP_FILES)))
 
 #
 # Define compile options for c-files special for this platform
-CC_OPTS +=
+CC_OPTS += 
 
 #
 # Define compile options for cpp-files special for this platform
 CPP_OPTS +=
 
 #
-# Link final binary from object files
-all: $(CC_TO_OBJ_TO_BUILD)
-	@echo $(CC_TO_OBJ_TO_BUILD)
-	$(CC) -o BlueMarlin.exe $(CC_TO_OBJ_TO_BUILD)
-	@echo done
+# Options used for dependency calculation
+DEP_OPTS += -MT $@ -MMD -MP -MF $*.d
 
 #
-# Target to delete all compile object files as well as the binary
+#
+# Linker options
+LINK_OPTS += 
+
+#
+# Link final binary from object files
+all: $(CC_TO_OBJ_TO_BUILD)
+	$(CC) -o BlueMarlin.exe $(CC_TO_OBJ_TO_BUILD)
+
+#
+# Target to delete all files generated during compilation as well as 
+# the binary
 clean:
 	$(RM) $(CC_TO_OBJ_TO_BUILD)
+	$(RM) $(CC_DEP_FILES)
+	$(RM) $(CPP_DEP_FILES)
 	$(RM) BlueMarlin.exe
+	
+show:
+	@echo Modules: $(MODULES)
+	@echo C-Files: $(CC_FILES)
+	@echo CPP-Files: $(CPP_FILES)
+	@echo OBJ-Files to buid: $(CC_TO_OBJ_TO_BUILD)
+	@echo C-Files include directories: $(CC_INCLUDE)
+	@echo CPP-Files include directories: $(CCP_INCLUDE)
+	@echo Modules Makfiles: $(MODULES_MAKEFILES)
+	@echo Platform: $(Platform_WindowsX86_CC_FILES)
+	@echo Template: $(Template_CC_FILES)
+
+#
+# Create a pattern rule with an empty recipe, so that make won’t fail if 
+# the dependency file doesn’t exist.
+%.d: ;
+
+#
+# Mark the dependency files precious to make, so they won’t be automatically
+# deleted as intermediate files.
+.PRECIOUS: %.d
 
 #
 # Generic rule to compile .c -> .o
 %.o: %.c
+%.o: %.c %.d
 	@echo Compiling $< ...
-	$(CC) -c $(CC_OPTS) $(CC_INCLUDE) $< -o $@
+	$(CC) -c $(DEP_OPTS) $(CC_OPTS) $(CC_INCLUDE) $< -o $@
 	@echo done
 	@echo .
 
 #
 # Generic rule to compile .cpp -> .o
 %.o: %.cpp
-	$(CPP) -c $(CC_OPTS) $(CC_INCLUDE) $< -o $@
+%.o: %.cpp %.d
+	$(CPP) -c $(DEP_OPTS) $(CC_OPTS) $(CPP_INCLUDE) $< -o $@
+#
+# Include generated dependency makefile.
+-include $(patsubst %,%.d,$(CC_FILES)))
