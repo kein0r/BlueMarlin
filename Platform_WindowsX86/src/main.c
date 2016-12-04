@@ -63,7 +63,7 @@
 int main()
 {
   /* Call init function normally used by Aurduino framework */
-  init();
+  setup();
 
   /* enter forever loop */
   while (1)
