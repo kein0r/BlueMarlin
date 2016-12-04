@@ -6,24 +6,12 @@ CC = gcc
 CPP = g++
 
 #
-# List of modules to be used. Any modules that should be compiled should
+# List of modules to be used. Any modules that should be compiled must
 # be added here.
+# Important: Platform shall be included last to make compilation work
 MODULES = Template Platform_WindowsX86
 #
-# Add makefiles for each module
-include $(foreach MODULE, $(MODULES), $(MODULE)/make/Makefile)
-
+# Below this line usually nothing needs to be changed
 #
-# 
-CC_FILES = $(foreach MODULE, $(MODULES), $($(MODULE)_CC_FILES))
-
-show:
-	@echo Modules: $(MODULES)
-	@echo C-Files: $(CC_FILES)
-	@echo CPP-Files: $(CPP_FILES)
-	@echo OBJ-Files to buid: $(CC_TO_OBJ_TO_BUILD)
-	@echo C-Files include directories: $(CC_INCLUDE)
-	@echo CPP-Files include directories: $(CCP_INCLUDE)
-	@echo Modules Makfiles: $(MODULES_MAKEFILES)
-	@echo Platform: $(Platform_WindowsX86_CC_FILES)
-	@echo Template: $(Template_CC_FILES)
+# Include makefiles of each module
+include $(foreach MODULE, $(MODULES), $(MODULE)/make/Makefile)

@@ -37,8 +37,19 @@ $(MODULE_NAME)_CPP_INCLUDE += -I$(Platform_WindowsX86_MODULE_PATH)/include
 #
 # The following lines are only important in platform modules
 #
-# Define command to delete files
-RM=rm -f
+# Define command to delete files. Used by make clean target
+RM = rm -f
+
+#
+# Create a list of all files to be compiled
+CC_FILES = $(foreach MODULE, $(MODULES), $($(MODULE)_CC_FILES))
+
+#
+# Create a list of all include directories to be used for C-files
+CC_INCLUDE = $(foreach MODULE, $(MODULES), $($(MODULE)_CC_INCLUDE))
+#
+# Create a list of all include directories to be used for cpp-files
+CPP_INCLUDE = $(foreach MODULE, $(MODULES), $($(MODULE)_CPP_INCLUDE))
 
 #
 # Generate list of .o files to be created from c files
@@ -54,25 +65,27 @@ CC_OPTS +=
 CPP_OPTS +=
 
 #
-# Generic rule to compile .c -> .o
-%.o: %.c
-	@build Building $<
-	$(CC) -c $(CC_OPTS) $(CC_INCLUDE) $< -o $@
-	@echo done
-
-#
-# Generic rule to compile .cpp -> .o
-%.o: %.cpp
-	$(CPP) -c $(CC_OPTS) $(CC_INCLUDE) $< -o $@
-
-#
 # Link final binary from object files
 all: $(CC_TO_OBJ_TO_BUILD)
+	@echo $(CC_TO_OBJ_TO_BUILD)
 	$(CC) -o BlueMarlin.exe $(CC_TO_OBJ_TO_BUILD)
 	@echo done
 
 #
 # Target to delete all compile object files as well as the binary
 clean:
-	$(foreach OBJ_FILE, $(CC_TO_OBJ_TO_BUILD), $(shell $(RM) $(OBJ_FILE)))
+	$(RM) $(CC_TO_OBJ_TO_BUILD)
 	$(RM) BlueMarlin.exe
+
+#
+# Generic rule to compile .c -> .o
+%.o: %.c
+	@echo Compiling $< ...
+	$(CC) -c $(CC_OPTS) $(CC_INCLUDE) $< -o $@
+	@echo done
+	@echo .
+
+#
+# Generic rule to compile .cpp -> .o
+%.o: %.cpp
+	$(CPP) -c $(CC_OPTS) $(CC_INCLUDE) $< -o $@
