@@ -55,8 +55,8 @@ CC_INCLUDE = $(foreach MODULE, $(MODULES), $($(MODULE)_CC_INCLUDE))
 CPP_INCLUDE = $(foreach MODULE, $(MODULES), $($(MODULE)_CPP_INCLUDE))
 
 #
-# Only one list is used to store all to be generated object files for
-# c files and c++ files.
+# Only one list is used to store all to be generated object files 
+# and dependency Mafiles for c files and c++ files.
 # Generate list of .o files to be created from c files
 # Change file suffix from .c to .o
 CC_TO_OBJ_TO_BUILD = $(addsuffix .o,$(basename $(CC_FILES)))
@@ -71,7 +71,7 @@ CC_DEP_FILES = $(addsuffix .d,$(basename $(CC_FILES)))
 #
 # Generate list of dependency makefile files
 # Change file suffix from .cpp to .d
-CPP_DEP_FILES = $(addsuffix .d,$(basename $(CPP_FILES)))
+CC_DEP_FILES += $(addsuffix .d,$(basename $(CPP_FILES)))
 
 #
 # Define compile options for c-files special for this platform
@@ -112,17 +112,16 @@ show:
 	@echo C-Files include directories: $(CC_INCLUDE)
 	@echo CPP-Files include directories: $(CCP_INCLUDE)
 	@echo Modules Makfiles: $(MODULES_MAKEFILES)
+	@echo Dependency Makfiles: $(CPP_DEP_FILES)
 	@echo Platform: $(Platform_WindowsX86_CC_FILES)
 	@echo Template: $(Template_CC_FILES)
 
 #
 # Create a pattern rule with an empty recipe, so that make won’t fail if 
 # the dependency file doesn’t exist.
-%.d: ;
-
-#
 # Mark the dependency files precious to make, so they won’t be automatically
 # deleted as intermediate files.
+%.d: ;
 .PRECIOUS: %.d
 
 #
@@ -141,4 +140,4 @@ show:
 	$(CPP) -c $(DEP_OPTS) $(CC_OPTS) $(CPP_INCLUDE) $< -o $@
 #
 # Include generated dependency Makefile if they exist
--include $(CPP_DEP_FILES)
+-include $(CC_DEP_FILES)
