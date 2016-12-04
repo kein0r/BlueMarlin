@@ -141,4 +141,4 @@ show:
 	$(CPP) -c $(DEP_OPTS) $(CC_OPTS) $(CPP_INCLUDE) $< -o $@
 #
 # Include generated dependency makefile.
--include $(patsubst %,%.d,$(CC_FILES)))
+-include $(CPP_DEP_FILES)
