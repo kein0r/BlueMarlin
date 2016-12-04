@@ -126,7 +126,7 @@ show:
 .PRECIOUS: %.d
 
 #
-# Generic rule to compile .c -> .o
+# Generic rule to compile .c -> .o (and create corresponding dependency Makefile)
 %.o: %.c
 %.o: %.c %.d
 	@echo Compiling $< ...
@@ -135,10 +135,10 @@ show:
 	@echo .
 
 #
-# Generic rule to compile .cpp -> .o
+# Generic rule to compile .cpp -> .o (and create corresponding dependency Makefile)
 %.o: %.cpp
 %.o: %.cpp %.d
 	$(CPP) -c $(DEP_OPTS) $(CC_OPTS) $(CPP_INCLUDE) $< -o $@
 #
-# Include generated dependency makefile.
+# Include generated dependency Makefile if they exist
 -include $(CPP_DEP_FILES)
