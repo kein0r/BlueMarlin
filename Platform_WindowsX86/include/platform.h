@@ -1,6 +1,6 @@
-#if (!defined PLATFORM_INCLUDE_TEMPLATE_H_)
+#if (!defined PLATFORM_INCLUDE_PLATFORM_H_)
 /* Preprocessor exclusion definition */
-#define PLATFORM_INCLUDE_TEMPLATE_H_
+#define PLATFORM_INCLUDE_PLATFORM_H_
 /**
  * \file platform.h
  *
@@ -32,5 +32,5 @@ void loop(void);
 /* ******************| External variables |**************************** */
 
 /** @} doxygen end group definition */
-#endif /* if !defined( PLATFORM_INCLUDE_TEMPLATE_H_ ) */
+#endif /* if !defined( PLATFORM_INCLUDE_PLATFORM_H_ ) */
 /* ******************| End of file |*********************************** */
