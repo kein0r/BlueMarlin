@@ -45,8 +45,8 @@
 /* ******************| Type definitions |****************************** */
 
 /* ******************| External function declarations |**************** */
-void setup(void);
-void loop(void);
+extern void setup(void);
+extern void loop(void);
 
 /* ******************| External constants |**************************** */
 

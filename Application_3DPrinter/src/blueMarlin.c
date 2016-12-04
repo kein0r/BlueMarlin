@@ -20,20 +20,20 @@
  *
  */
 /**
- * \file template.c
+ * \file blueMarlin.c
  *
- * \brief Template source file
+ * \brief Main file for BlueMarlin firmware
  *
- * File names should start with lowercase character and use cammelCase 
- * notation.
+ * This is the main entry point to the firmware. In this file setup and
+ * loop are implemented.
  *
  * \project BlueMarlin
- * \author <FULL NAME>
+ * \author kein0f
  *
  */
 
 
-/** \addtogroup Template
+/** \addtogroup BlueMarlin
  * @{
  */
 
@@ -45,26 +45,34 @@
 /* ******************| Type Definitions |****************************** */
 
 /* ******************| Function Prototypes |*************************** */
-int Template_templateFunction(int i, int *s);
-
 
 /* ******************| Global Variables |****************************** */
 
 /* ******************| Function Implementation |*********************** */
 /**
- * \brief Template function
- * Document your function here. Function names shall start with module names
- * followed by an underscore followed by the function name starting with a 
- * lowercase letter using cammelCase notion.
- * Dont' forget to also describe the parameters of your function including
- * their direction. Also describe the return values, if any.
- * @param[in]  		i	Example input parameter
- * @param[in/out]	i	Example input/output parameter
- * @return			This function returns result X
+ * \brief Implementation of function set-up from Arduino framework
+ *
+ * This function is called right after hardware initialization once. The
+ * existence of this function is based on the Arduino framework for which
+ * this firmware was originally written.
+ * This function does not obey the overall function naming rules.
 */
-int Template_templateFunction(int i, int *s)
+void setup(void)
 {
-	return i;
+
+}
+
+/**
+ * \brief Implementation of function loop from Arduino framework
+ *
+ * This function is called cyclically as fast as possible. The existence
+ * of this function is based on the Arduino framework for which
+ * this firmware was originally written.
+ * This function does not obey the overall function naming rules.
+ */
+void loop(void)
+{
+
 }
 
 /** @} doxygen end group definition */
