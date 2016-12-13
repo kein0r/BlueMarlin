@@ -22,18 +22,17 @@
 /**
  * \file gCodeRingBuffer.c
  *
- * \brief gCodeRingBuffer source file
+ * \brief Ring buffer for g codes
  *
- * File names should start with lowercase character and use cammelCase 
- * notation.
- *
+ * Implementation of a ring buffer for g-codes. 
+ * 
  * \project BlueMarlin
  * \author kein0r
  *
  */
 
 
-/** \addtogroup gCodeRingBuffer
+/** \addtogroup GCodeRingBuffer
  * @{
  */
 
@@ -45,14 +44,14 @@
 /* ******************| Type Definitions |****************************** */
 
 /* ******************| Function Prototypes |*************************** */
-int gCodeRingBuffer_gCodeRingBufferFunction(int i, int *s);
+int GCodeRingBuffer_GCodeRingBufferFunction(int i, int *s);
 
 
 /* ******************| Global Variables |****************************** */
 
 /* ******************| Function Implementation |*********************** */
 /**
- * \brief gCodeRingBuffer function
+ * \brief GCodeRingBuffer function
  * Document your function here. Function names shall start with module names
  * followed by an underscore followed by the function name starting with a 
  * lowercase letter using cammelCase notion.
@@ -62,7 +61,7 @@ int gCodeRingBuffer_gCodeRingBufferFunction(int i, int *s);
  * @param[in/out]	i	Example input/output parameter
  * @return			This function returns result X
 */
-int gCodeRingBuffer_gCodeRingBufferFunction(int i, int *s)
+int GCodeRingBuffer_GCodeRingBufferFunction(int i, int *s)
 {
 	return i;
 }

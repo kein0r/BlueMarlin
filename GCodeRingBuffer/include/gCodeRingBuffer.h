@@ -23,9 +23,9 @@
 /* Preprocessor exclusion definition */
 #define GCODERINGBUFFER_INCLUDE_GCODERINGBUFFER_H_
 /**
- * \file gCodeRingBuffer.h
+ * \file GCodeRingBuffer.h
  *
- * \brief gCodeRingBuffer include file
+ * \brief GCodeRingBuffer include file
  *
  * Include files should start with a lowercase character and use cammelCase
  * notation.
@@ -35,16 +35,52 @@
  *
  */
 
-
-/** \addtogroup gCodeRingBuffer
+/** \addtogroup GCodeRingBuffer
  * @{
  */
 
 /* ******************| Inclusions |************************************ */
+#include <platform.h>
 
 /* ******************| Macros |**************************************** */
+#ifndef GCODERINGBUFFER_RINGBUFFER_SIZE
+/**
+ * Default number of entries in ringbuffer. Its possible to override default 
+ * value for GCODERINGBUFFER_RINGBUFFER_SIZE via configuration.h or compiler
+ * by using -DGCODERINGBUFFER_RINGBUFFER_SIZE=32
+ * @note: Due to the way empty available bytes are calculated, 
+ * GCODERINGBUFFER_RINGBUFFER_SIZE must be always to the power of two.
+ */
+#define GCODERINGBUFFER_RINGBUFFER_SIZE      (uint8_t)32
+#endif
 
 /* ******************| Type definitions |****************************** */
+/**
+ * Typedef for head and tail pointer of ringbuffer
+ */
+typedef uint8_t GCodeRingBuffer_BufferIndex_t;
+
+/**
+ * Datatype to keep track of last operation to ring buffer. FALSE if last 
+ * operation was a read, otherwise last operation was a write to buffer 
+ */
+typedef bool GCodeRingBuffer_lastOperation_t; 
+#define GCODERINGBUFFER_LASTOPERATION_READ         FALSE
+#define GCODERINGBUFFER_LASTOPERATION_WRITE        TRUE
+
+/**
+ * Data structure for ring buffer.
+ * Index pointer for head and tail will always point to element which is next to be read/written.
+ * This ring buffer will use "Record last operation" for full/empty buffer distinction see
+ * https://en.wikipedia.org/wiki/Circular_buffer "Record last operation" for details
+ */
+typedef struct
+{
+  unsigned char buffer[GCODERINGBUFFER_RINGBUFFER_SIZE];     /*!< Content of ring buffer */
+  volatile GCodeRingBuffer_BufferIndex_t head;               /*!< Index for writing to the ring buffer. Index is increased after writing (i.e. producing) an element */
+  volatile GCodeRingBuffer_BufferIndex_t tail;               /*!< Index for reading from ring buffer. Index is increased after reading (i.e consuming) an element. */
+  volatile GCodeRingBuffer_lastOperation_t lastOperation;    /*!< False if last operation was reading the buffer, true if last operation was writting into the buffer */
+} GCodeRingBuffer_RingBuffer_t;
 
 /* ******************| External function declarations |**************** */
 

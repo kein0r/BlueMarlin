@@ -1,11 +1,7 @@
 # \file
 #
-# \brief Template Makefile to be used for all modules
+# \brief Makefile for GCodeRingBuffer
 # 
-# This is a template Makefile which shall be used for all new modules. Please
-# adapt for each new module. The following 
-# - Module name and base directory must be identical
-#
 # \author kein0r
 #
 # Add this module to the list of modules. Make sure that the module name matches
