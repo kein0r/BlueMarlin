@@ -44,6 +44,31 @@
 
 /* ******************| Type definitions |****************************** */
 
+/**
+ * Platform module shall specify the following data types. 
+ * - uint8_t, int8_t,
+ * - uint16_t, int16_t,
+ * - uint32_t, int32_t
+ * Normally they are specified in stdint.h, however, this will invoke one
+ * more external reference and is therefore avoided. The following is a 
+ * copy of mingw's stdint.h file.
+ */
+typedef signed char int8_t;
+typedef unsigned char   uint8_t;
+typedef short  int16_t;
+typedef unsigned short  uint16_t;
+typedef int  int32_t;
+typedef unsigned   uint32_t;
+
+/*
+ * Platform module shall specify bool datatype and TRUE/FALSE
+ */
+typedef unsigned char bool;
+#undef FALSE
+#undef TRUE
+#define FALSE	0
+#define TRUE	1
+
 /* ******************| External function declarations |**************** */
 extern void setup(void);
 extern void loop(void);
