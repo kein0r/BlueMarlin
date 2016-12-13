@@ -44,8 +44,11 @@ $(MODULE_NAME)_CPP_INCLUDE := -I$($(MODULE_NAME)_MODULE_PATH)/include
 RM = rm -f
 
 #
-# Create a list of all files to be compiled
+# Create a list of all c files to be compiled
 CC_FILES = $(foreach MODULE, $(MODULES), $($(MODULE)_CC_FILES))
+#
+# Create a list of all cpp files to be compiled
+CPP_FILES = $(foreach MODULE, $(MODULES), $($(MODULE)_CPP_FILES))
 
 #
 # Create a list of all include directories to be used for C-files
@@ -71,7 +74,7 @@ CC_DEP_FILES = $(addsuffix .d,$(basename $(CC_FILES)))
 #
 # Generate list of dependency makefile files
 # Change file suffix from .cpp to .d
-CC_DEP_FILES += $(addsuffix .d,$(basename $(CPP_FILES)))
+CPP_DEP_FILES += $(addsuffix .d,$(basename $(CPP_FILES)))
 
 #
 # Define compile options for c-files special for this platform
@@ -110,11 +113,11 @@ show:
 	@echo CPP-Files: $(CPP_FILES)
 	@echo OBJ-Files to buid: $(CC_TO_OBJ_TO_BUILD)
 	@echo C-Files include directories: $(CC_INCLUDE)
-	@echo CPP-Files include directories: $(CCP_INCLUDE)
+	@echo CPP-Files include directories: $(CPP_INCLUDE)
 	@echo Modules Makfiles: $(MODULES_MAKEFILES)
-	@echo Dependency Makfiles: $(CPP_DEP_FILES)
-	@echo Platform: $(Platform_WindowsX86_CC_FILES)
-	@echo Template: $(Template_CC_FILES)
+	@echo C-Files Dependency Makfiles: $(CC_DEP_FILES)
+	@echo C-Files Dependency Makfiles: $(CPP_DEP_FILES)
+	
 
 #
 # Create a pattern rule with an empty recipe, so that make won’t fail if 
