@@ -38,7 +38,8 @@
  */
 
 /* ******************| Inclusions |************************************ */
-#include "../include/blueMarlin.h"
+#include "platform.h"
+#include "blueMarlin.h"
 
 /* ******************| Macros |**************************************** */
 
