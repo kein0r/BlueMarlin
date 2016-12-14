@@ -17,7 +17,7 @@
 #include "gCodeRingBuffer_test.h"
 /* Include .cpp file to be tested in order to get access to all private
  * or static functions */
-//#include <gCodeRingBuffer.cpp>
+#include <gCodeRingBuffer.cpp>
 
 /* ******************| Macros |**************************************** */
 

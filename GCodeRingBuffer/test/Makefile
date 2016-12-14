@@ -33,7 +33,7 @@ CFLAGS += -Wall -g -fprofile-arcs -ftest-coverage
 
 #
 # Add standard include directories 
-CFLAGS += -I$(CURDIR)/stubs -I$(CURDIR)/../include -I$(CURDIR)/../src -I$(EMBUNIT_DIR) 
+CFLAGS += $(CC_INCLUDE) -I$(CURDIR)/stubs -I$(CURDIR)/../include -I$(CURDIR)/../src -I$(EMBUNIT_DIR) 
 #-I$(CURDIR)/../../base/tools/MinGW/include
 
 # 
