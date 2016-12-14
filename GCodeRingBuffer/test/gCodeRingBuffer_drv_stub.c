@@ -1,21 +1,19 @@
 /**
- * \file template_test_drv_stub.c
+ * \file gCodeRingBuffer_test_drv_stub.c
  *
- * \brief Template source file for unit test stubs
+ * \brief Stubs for GCodeRingBuffer unit tests
  *
  * All stubs needed for the unit test of this particular modules shall
  * be done within this file.
  *
- * File names should start with lowercase character and use cammelCase
- * notation.
  *
  * \project BlueMarlin
- * \author <FULL NAME>
+ * \author kein0r
  *
  */
 
 
-/** \addtogroup Template
+/** \addtogroup GCodeRingBuffer
  * @{
  */
 

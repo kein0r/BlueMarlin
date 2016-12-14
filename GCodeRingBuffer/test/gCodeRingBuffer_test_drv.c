@@ -1,18 +1,15 @@
 /**
- * \file template_test_drv.c
+ * \file gCodeRingBuffer_test_drv.c
  *
- * \brief Template source file
- *
- * File names should start with lowercase character and use cammelCase
- * notation.
+ * \brief GCodeRingBuffer unit test implementation
  *
  * \project BlueMarlin
- * \author <FULL NAME>
+ * \author kein0r
  *
  */
 
 
-/** \addtogroup Template
+/** \addtogroup GCodeRingBuffer
  * @{
  */
 
