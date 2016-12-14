@@ -41,6 +41,11 @@
 /* ******************| Inclusions |************************************ */
 
 /* ******************| Macros |**************************************** */
+/**
+ * \brief Return values to be used by all functions
+ */
+#define RESULT_OK       (uint8_t)1
+#define RESULT_NOT_OK   (uint8_t)0
 
 /* ******************| Type definitions |****************************** */
 
@@ -66,11 +71,11 @@ typedef unsigned   uint32_t;
  */
  #ifndef __cplusplus
 typedef unsigned char bool;
+#endif
 #undef FALSE
 #undef TRUE
 #define FALSE	0
 #define TRUE	1
-#endif
 
 /* ******************| External function declarations |**************** */
 extern void setup(void);
