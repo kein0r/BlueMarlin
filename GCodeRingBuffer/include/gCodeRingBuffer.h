@@ -27,11 +27,8 @@
  *
  * \brief GCodeRingBuffer include file
  *
- * Include files should start with a lowercase character and use cammelCase
- * notation.
- *
  * \project BlueMarlin
- * \author <FULL NAME>
+ * \author kein0r
  *
  */
 
@@ -56,6 +53,11 @@
 
 /* ******************| Type definitions |****************************** */
 /**
+ * GCode buffer data. 
+ */
+typedef uint8_t GCodeRingBuffer_gCode_t;
+
+/**
  * Typedef for head and tail pointer of ringbuffer
  */
 typedef uint8_t GCodeRingBuffer_BufferIndex_t;
@@ -76,11 +78,28 @@ typedef bool GCodeRingBuffer_lastOperation_t;
  */
 typedef struct
 {
-  unsigned char buffer[GCODERINGBUFFER_RINGBUFFER_SIZE];     /*!< Content of ring buffer */
-  volatile GCodeRingBuffer_BufferIndex_t head;               /*!< Index for writing to the ring buffer. Index is increased after writing (i.e. producing) an element */
-  volatile GCodeRingBuffer_BufferIndex_t tail;               /*!< Index for reading from ring buffer. Index is increased after reading (i.e consuming) an element. */
-  volatile GCodeRingBuffer_lastOperation_t lastOperation;    /*!< False if last operation was reading the buffer, true if last operation was writting into the buffer */
+  GCodeRingBuffer_gCode_t buffer[GCODERINGBUFFER_RINGBUFFER_SIZE];  /*!< Content of ring buffer */
+  GCodeRingBuffer_BufferIndex_t head;                               /*!< Index for writing to the ring buffer. Index is increased after writing (i.e. producing) an element */
+  GCodeRingBuffer_BufferIndex_t tail;                               /*!< Index for reading from ring buffer. Index is increased after reading (i.e consuming) an element. */
+  GCodeRingBuffer_lastOperation_t lastOperation;                    /*!< False if last operation was reading the buffer, true if last operation was writting into the buffer */
 } GCodeRingBuffer_RingBuffer_t;
+/* Some function like macro to make code more readable */
+#define GCodeRingBuffer_incrementIndex(a)          a = (a + 1) % GCODERINGBUFFER_RINGBUFFER_SIZE
+#define GCodeRingBuffer_ringBufferFull(x)          (x.lastOperation == GCODERINGBUFFER_LASTOPERATION_WRITE && (x.head == x.tail))
+#define GCodeRingBuffer_ringBufferEmpty(x)         (x.lastOperation == GCODERINGBUFFER_LASTOPERATION_READ && (x.head == x.tail))
+
+
+class GCodeRingBuffer
+{
+private:
+  GCodeRingBuffer_RingBuffer_t gCodeRingBuffer_RingBuffer;
+  
+public:
+  GCodeRingBuffer();
+  uint8_t write(GCodeRingBuffer_gCode_t data);
+  uint8_t read(GCodeRingBuffer_BufferIndex_t *data);
+  uint8_t available();
+};
 
 /* ******************| External function declarations |**************** */
 
