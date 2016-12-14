@@ -116,7 +116,7 @@ show:
 	@echo CPP-Files include directories: $(CPP_INCLUDE)
 	@echo Modules Makfiles: $(MODULES_MAKEFILES)
 	@echo C-Files Dependency Makfiles: $(CC_DEP_FILES)
-	@echo C-Files Dependency Makfiles: $(CPP_DEP_FILES)
+	@echo CPP-Files Dependency Makfiles: $(CPP_DEP_FILES)
 	
 
 #
@@ -143,4 +143,5 @@ show:
 	$(CPP) -c $(DEP_OPTS) $(CC_OPTS) $(CPP_INCLUDE) $< -o $@
 #
 # Include generated dependency Makefile if they exist
+-include $(CPP_DEP_FILES)
 -include $(CC_DEP_FILES)
