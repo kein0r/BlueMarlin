@@ -61,13 +61,16 @@ typedef int  int32_t;
 typedef unsigned   uint32_t;
 
 /*
- * Platform module shall specify bool datatype and TRUE/FALSE
+ * Platform module shall specify bool datatype and TRUE/FALSE.
+ * @note Not sure how this works in conjunction with the cppp bool definition.
  */
+ #ifndef __cplusplus
 typedef unsigned char bool;
 #undef FALSE
 #undef TRUE
 #define FALSE	0
 #define TRUE	1
+#endif
 
 /* ******************| External function declarations |**************** */
 extern void setup(void);
