@@ -50,7 +50,7 @@ LIBS += -lgcov -lembUnit -ltextui
 #
 # Target to create final binary out of .o files
 all: $(CC_TO_OBJ_TO_BUILD)
-	gcc -o $(OUTPUT) $^ $(CFLAGS) $(LIBS)
+	$(CC) -o $(OUTPUT) $^ $(CFLAGS) $(LIBS)
 	
 .PHONY: clean run
 	
@@ -59,6 +59,8 @@ clean:
 	
 run: $(OUTPUT).exe
 	$(OUTPUT)
+	@echo .
+	gcov gCodeRingBuffer_test.c
 	
 embUnitLib:
 	$(MAKE) --directory=$(EMBUNIT_DIR)/embUnit
