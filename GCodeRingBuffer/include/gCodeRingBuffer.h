@@ -91,8 +91,12 @@ typedef struct
 
 class GCodeRingBuffer
 {
+#if defined(UNIT_TEST)
+  friend class UnitTest;
+#endif
+
 private:
-  GCodeRingBuffer_RingBuffer_t gCodeRingBuffer_RingBuffer;
+  GCodeRingBuffer_RingBuffer_t ringBuffer;
   
 public:
   GCodeRingBuffer();

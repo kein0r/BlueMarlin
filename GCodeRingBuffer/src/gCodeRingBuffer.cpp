@@ -48,6 +48,18 @@
 /* ******************| Global Variables |****************************** */
 
 /* ******************| Function Implementation |*********************** */
+
+/**
+ * Initializes GCodeRingBuffer module.
+ */
+GCodeRingBuffer::GCodeRingBuffer(void)
+{
+  /* Initialize ring buffer */
+  ringBuffer.head = 0;
+  ringBuffer.tail = 0;
+  ringBuffer.lastOperation = GCODERINGBUFFER_LASTOPERATION_READ; /* Buffer is empty on start-up */
+}
+
 /**
  * Write one element to ringbuffer. Element will be appended to the existing
  * data. If buffer is full no data will be written and function returns 
@@ -61,12 +73,12 @@
 uint8_t GCodeRingBuffer::write(const GCodeRingBuffer_BufferIndex_t data)
 {
   uint8_t retVal = RESULT_NOT_OK;
-  if (!GCodeRingBuffer_ringBufferFull(gCodeRingBuffer_RingBuffer))
+  if (!GCodeRingBuffer_ringBufferFull(ringBuffer))
   {
     /* Place data in buffer */
-    gCodeRingBuffer_RingBuffer.buffer[gCodeRingBuffer_RingBuffer.head] = data;
-    gCodeRingBuffer_RingBuffer.lastOperation = GCODERINGBUFFER_LASTOPERATION_WRITE;
-    GCodeRingBuffer_incrementIndex(gCodeRingBuffer_RingBuffer.head);
+    ringBuffer.buffer[ringBuffer.head] = data;
+    ringBuffer.lastOperation = GCODERINGBUFFER_LASTOPERATION_WRITE;
+    GCodeRingBuffer_incrementIndex(ringBuffer.head);
 	retVal = RESULT_OK;
   }
   else
@@ -90,12 +102,12 @@ uint8_t GCodeRingBuffer::read(GCodeRingBuffer_BufferIndex_t *data)
 {
   uint8_t retVal = RESULT_NOT_OK;
   
-  if(! GCodeRingBuffer_ringBufferEmpty(gCodeRingBuffer_RingBuffer) )
+  if(! GCodeRingBuffer_ringBufferEmpty(ringBuffer) )
   {
-    *data = gCodeRingBuffer_RingBuffer.buffer[gCodeRingBuffer_RingBuffer.tail];
-    gCodeRingBuffer_RingBuffer.lastOperation = GCODERINGBUFFER_LASTOPERATION_READ;
-    GCodeRingBuffer_incrementIndex(gCodeRingBuffer_RingBuffer.tail);
-	retVal = RESULT_NOT_OK;
+    *data = ringBuffer.buffer[ringBuffer.tail];
+    ringBuffer.lastOperation = GCODERINGBUFFER_LASTOPERATION_READ;
+    GCodeRingBuffer_incrementIndex(ringBuffer.tail);
+	retVal = RESULT_OK;
   }
   return retVal;
 }
@@ -110,7 +122,7 @@ uint8_t GCodeRingBuffer::read(GCodeRingBuffer_BufferIndex_t *data)
 uint8_t GCodeRingBuffer::available()
 {
   /* Cast to uint8_t is important here because if not compiler will chose sint8_t */
-  return (uint8_t)(gCodeRingBuffer_RingBuffer.head - gCodeRingBuffer_RingBuffer.tail) % GCODERINGBUFFER_RINGBUFFER_SIZE;
+  return (uint8_t)(ringBuffer.head - ringBuffer.tail) % GCODERINGBUFFER_RINGBUFFER_SIZE;
 }
 
 /** @} doxygen end group definition */
