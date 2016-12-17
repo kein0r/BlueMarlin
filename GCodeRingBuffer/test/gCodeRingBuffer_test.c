@@ -74,23 +74,72 @@ static void GCodeRingBuffer_GCodeRingBuffer_Read_2(void)
   TEST_ASSERT_EQUAL_INT(0, gCodeRingBuffer->available());
 }
 
-/*
- * Insert a few elements in the buffer
- * Test if return value is RESULT_OK when buffer is not full
- * Test if return value is RESULT_NOT_OK when buffer is full
+/**
+ * Simple write test writing a few elements to ringbuffer 
+ * Test if rinbuffer is empty
+ * Write two elements
+ * Test if ringbuffer fill rate is reported correctly
+ * Read back both elements
+ * Test if value is the same as written
+ * Test if ringbuffer is empty again
  */
 static void GCodeRingBuffer_GCodeRingBuffer_Write_1(void)
+{
+  /* Write two elements to rinbuffer */
+  GCodeRingBuffer_gCode_t element = 0xaa;
+  TEST_ASSERT_EQUAL_INT(0, gCodeRingBuffer->available());
+  TEST_ASSERT_EQUAL_INT(RESULT_OK, gCodeRingBuffer->write(element));
+  TEST_ASSERT_EQUAL_INT(1, gCodeRingBuffer->available());
+  element = 0xbb;
+  TEST_ASSERT_EQUAL_INT(RESULT_OK, gCodeRingBuffer->write(element));
+  TEST_ASSERT_EQUAL_INT(2, gCodeRingBuffer->available());
+  
+  /* Readback first element from buffer and check its value */
+  TEST_ASSERT_EQUAL_INT(RESULT_OK, gCodeRingBuffer->read(&element));
+  TEST_ASSERT_EQUAL_INT(0xaa, element);
+  
+  /* Readback first element from buffer and check its value */
+  TEST_ASSERT_EQUAL_INT(1, gCodeRingBuffer->available());
+  TEST_ASSERT_EQUAL_INT(RESULT_OK, gCodeRingBuffer->read(&element));
+  TEST_ASSERT_EQUAL_INT(0xbb, element);
+  
+  /* Check if buffer is empty again */
+  TEST_ASSERT_EQUAL_INT(0, gCodeRingBuffer->available());
+}
+
+/**
+ * Insert more elements than the ringbuffer can hold
+ * Test if return value is RESULT_OK when buffer is not full
+ * Test if buffer fill rate is reported correctly
+ * Test if return value is RESULT_NOT_OK when buffer is full
+ * Read the elements back
+ * Test if buffer fill rate is reported correctly
+ * Test if value can be read back correctly
+ * Test if read returns RESULT_OK as long as ringbuffer contains values
+ * Test if read returns RESULT_NOT_OK if buffer is empty again
+ */
+static void GCodeRingBuffer_GCodeRingBuffer_Write_2(void)
 {
   GCodeRingBuffer_gCode_t element = 0xaa;
   for (int i=0; i<GCODERINGBUFFER_RINGBUFFER_SIZE; i++)
   {
-	element = (GCodeRingBuffer_gCode_t)i;
-	TEST_ASSERT_EQUAL_INT(i, gCodeRingBuffer->available());
+    element = (GCodeRingBuffer_gCode_t)i;
+    TEST_ASSERT_EQUAL_INT(i, gCodeRingBuffer->available());
     TEST_ASSERT_EQUAL_INT(RESULT_OK, gCodeRingBuffer->write(element));
   }
   /* Ringbuffer is full now, check if another write will return
    * RESULT_NOT_OK */
    TEST_ASSERT_EQUAL_INT(RESULT_NOT_OK, gCodeRingBuffer->write(element));
+   
+  /* Check if values can be read back correctly int the same sequence */
+  for (int i=0; i<GCODERINGBUFFER_RINGBUFFER_SIZE; i++)
+  {
+    TEST_ASSERT_EQUAL_INT(GCODERINGBUFFER_RINGBUFFER_SIZE-i, gCodeRingBuffer->available());
+    element = 0xaa;
+    TEST_ASSERT_EQUAL_INT(RESULT_OK, gCodeRingBuffer->read(&element));
+    TEST_ASSERT_EQUAL_INT(i, element);
+  }
+  TEST_ASSERT_EQUAL_INT(RESULT_NOT_OK, gCodeRingBuffer->read(&element));
 }
 
 /**
@@ -98,7 +147,7 @@ static void GCodeRingBuffer_GCodeRingBuffer_Write_1(void)
  */
 static void setUp(void)
 {
-	gCodeRingBuffer = new GCodeRingBuffer();
+  gCodeRingBuffer = new GCodeRingBuffer();
 }
 
 /**
@@ -106,16 +155,17 @@ static void setUp(void)
  */
 static void tearDown(void)
 {
-	delete(gCodeRingBuffer);
+  delete(gCodeRingBuffer);
 }
 
 TestRef GCodeRingBuffer_test_RunTests(void)
 {
   EMB_UNIT_TESTFIXTURES(fixtures) {
     new_TestFixture("Test case GCodeRingBuffer_GCodeRingBuffer_Init_1", GCodeRingBuffer_GCodeRingBuffer_Init_1),
-	new_TestFixture("Test case GCodeRingBuffer_GCodeRingBuffer_Read_1", GCodeRingBuffer_GCodeRingBuffer_Read_1),
-	new_TestFixture("Test case GCodeRingBuffer_GCodeRingBuffer_Read_2", GCodeRingBuffer_GCodeRingBuffer_Read_2),
-	new_TestFixture("Test case GCodeRingBuffer_GCodeRingBuffer_Write_1", GCodeRingBuffer_GCodeRingBuffer_Write_1)
+    new_TestFixture("Test case GCodeRingBuffer_GCodeRingBuffer_Read_1", GCodeRingBuffer_GCodeRingBuffer_Read_1),
+    new_TestFixture("Test case GCodeRingBuffer_GCodeRingBuffer_Read_2", GCodeRingBuffer_GCodeRingBuffer_Read_2),
+    new_TestFixture("Test case GCodeRingBuffer_GCodeRingBuffer_Write_1", GCodeRingBuffer_GCodeRingBuffer_Write_1),
+    new_TestFixture("Test case GCodeRingBuffer_GCodeRingBuffer_Write_2", GCodeRingBuffer_GCodeRingBuffer_Write_2)
   };
   EMB_UNIT_TESTCALLER(GCodeRingBuffer_tests,"GCodeRingBuffer Unit test",setUp,tearDown,fixtures);
   return (TestRef)&GCodeRingBuffer_tests;

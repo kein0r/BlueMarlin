@@ -122,7 +122,12 @@ uint8_t GCodeRingBuffer::read(GCodeRingBuffer_BufferIndex_t *data)
 uint8_t GCodeRingBuffer::available()
 {
   /* Cast to uint8_t is important here because if not compiler will chose sint8_t */
-  return (uint8_t)(ringBuffer.head - ringBuffer.tail) % GCODERINGBUFFER_RINGBUFFER_SIZE;
+  uint8_t retVal = (uint8_t)(ringBuffer.head - ringBuffer.tail) % GCODERINGBUFFER_RINGBUFFER_SIZE;
+  if ((retVal == 0) && (ringBuffer.lastOperation == GCODERINGBUFFER_LASTOPERATION_WRITE))
+  {
+	retVal = GCODERINGBUFFER_RINGBUFFER_SIZE;
+  }
+  return retVal;
 }
 
 /** @} doxygen end group definition */
