@@ -107,16 +107,26 @@ clean:
 	$(RM) $(CPP_DEP_FILES)
 	$(RM) BlueMarlin.exe
 	
+help:
+	@echo .
+	@echo The following rules are available
+	@echo * make all - Builds the complete project
+	@echo * make clean - Deletes all build artifacts
+	@echo * make show - Prints most important make variables
+	@echo * make help - Prints this help text
+	@echo Build dependencies are automatically calculated. Make target dep does not exist.
+	@echo .
+	
 show:
-	@echo Modules: $(MODULES)
-	@echo C-Files: $(CC_FILES)
-	@echo CPP-Files: $(CPP_FILES)
-	@echo OBJ-Files to buid: $(CC_TO_OBJ_TO_BUILD)
-	@echo C-Files include directories: $(CC_INCLUDE)
-	@echo CPP-Files include directories: $(CPP_INCLUDE)
-	@echo Modules Makfiles: $(MODULES_MAKEFILES)
-	@echo C-Files Dependency Makfiles: $(CC_DEP_FILES)
-	@echo CPP-Files Dependency Makfiles: $(CPP_DEP_FILES)
+	@echo Modules:      $(MODULES)
+	@echo C-Files:      $(CC_FILES)
+	@echo CPP-Files:    $(CPP_FILES)
+	@echo OBJ-Files:    $(CC_TO_OBJ_TO_BUILD)
+	@echo C include directories:   $(CC_INCLUDE)
+	@echo CPP include directories: $(CPP_INCLUDE)
+	@echo Modules makfiles:        $(MODULES_MAKEFILES)
+	@echo C dependency makfiles:   $(CC_DEP_FILES)
+	@echo CPP dependency makfiles: $(CPP_DEP_FILES)
 	
 
 #
