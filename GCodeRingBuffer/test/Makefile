@@ -21,7 +21,7 @@ OUTPUT = test
 
 #
 # Path to embUnit
-EMBUNIT_DIR = $(CURDIR)/../../test/embUnit
+EMBUNIT_DIR = $(CURDIR)/../../tools/embunit
 
 #
 # Change file suffix from .c to .o in list
@@ -34,12 +34,10 @@ CFLAGS += -Wall -g -fprofile-arcs -ftest-coverage
 #
 # Add standard include directories 
 CFLAGS += $(CC_INCLUDE) -I$(CURDIR)/stubs -I$(CURDIR)/../include -I$(CURDIR)/../src -I$(EMBUNIT_DIR) 
-#-I$(CURDIR)/../../base/tools/MinGW/include
 
 # 
 # Add needed libraries. Generic and unit test
 LIBS += -L$(EMBUNIT_DIR)/lib
-#LIBS += -L$(CURDIR)/../../base/tools/MinGW/lib/gcc/mingw32/4.8.1
 LIBS += -lgcov -lembUnit -ltextui
 
 #
@@ -49,7 +47,7 @@ LIBS += -lgcov -lembUnit -ltextui
 	
 #
 # Target to create final binary out of .o files
-all: $(CC_TO_OBJ_TO_BUILD)
+all: $(CC_TO_OBJ_TO_BUILD) $(EMBUNIT_DIR)/lib/libembUnit.a $(EMBUNIT_DIR)/lib/libtextui.a
 	$(CC) -o $(OUTPUT) $^ $(CFLAGS) $(LIBS)
 	
 .PHONY: clean run
@@ -62,6 +60,11 @@ run: $(OUTPUT).exe
 	@echo .
 	gcov gCodeRingBuffer_test.c
 	
-embUnitLib:
+$(EMBUNIT_DIR)/lib/libembUnit.a:
 	$(MAKE) --directory=$(EMBUNIT_DIR)/embUnit
+
+$(EMBUNIT_DIR)/lib/libtextui.a:
 	$(MAKE) --directory=$(EMBUNIT_DIR)/textui
+
+help:
+	@echo $(EMBUNIT_DIR)
