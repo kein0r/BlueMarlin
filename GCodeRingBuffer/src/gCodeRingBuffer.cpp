@@ -25,6 +25,12 @@
  * \brief Ring buffer for g codes
  *
  * Implementation of a ring buffer for g-codes. 
+ *
+ * @note This replaces the following functions 
+ * - drain_queued_commands_P: Reads commands from RAM placed there by other parts of the program
+ * - enqueue_and_echo_command: Copies command from RAM to intermediate global buffer
+ * - _enqueuecommand: Copies command to command_queue buffer 
+ * - _commit_command: Moves the write pointer of command_queue (cmd_queue_index_w) ahead
  * 
  * \project BlueMarlin
  * \author kein0r
