@@ -19,13 +19,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#if (!defined TEMPLATE_INCLUDE_TEMPLATE_H_)
+#if (!defined GCODEPARSER_INCLUDE_GCODEPARSER_H_)
 /* Preprocessor exclusion definition */
-#define TEMPLATE_INCLUDE_TEMPLATE_H_
+#define GCODEPARSER_INCLUDE_GCODEPARSER_H_
 /**
- * \file Template.h
+ * \file gCodeParser.h
  *
- * \brief Template include file
+ * \brief GCodeParser include file
  *
  * Include files should start with a lowercase character and use cammelCase
  * notation.
@@ -36,7 +36,7 @@
  */
 
 
-/** \addtogroup Template
+/** \addtogroup GCodeParser
  * @{
  */
 
@@ -53,5 +53,5 @@
 /* ******************| External variables |**************************** */
 
 /** @} doxygen end group definition */
-#endif /* if !defined( TEMPLATE_INCLUDE_TEMPLATE_H_ ) */
+#endif /* if !defined( GCODEPARSER_INCLUDE_GCODEPARSER_H_ ) */
 /* ******************| End of file |*********************************** */
