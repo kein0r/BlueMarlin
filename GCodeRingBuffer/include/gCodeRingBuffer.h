@@ -27,6 +27,10 @@
  *
  * \brief GCodeRingBuffer include file
  *
+ * This ringbuffer will contain compressed (see #GCodeReader) machine codes. 
+ * The length of the buffer #GCODERINGBUFFER_RINGBUFFER_SIZE should therefore
+ * be chosen big enough.
+ *
  * \project BlueMarlin
  * \author kein0r
  *
@@ -48,7 +52,7 @@
  * @note: Due to the way empty available bytes are calculated, 
  * GCODERINGBUFFER_RINGBUFFER_SIZE must be always to the power of two.
  */
-#define GCODERINGBUFFER_RINGBUFFER_SIZE      (uint8_t)32
+#define GCODERINGBUFFER_RINGBUFFER_SIZE      (uint8_t)64
 #endif
 
 /* ******************| Type definitions |****************************** */
