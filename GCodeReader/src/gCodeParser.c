@@ -22,16 +22,18 @@
 /**
  * \file gCodeParser.c
  *
- * \brief GCodeParser source file
+ * \brief GCodeParser 
  *
- * File names should start with lowercase character and use cammelCase 
- * notation.
+ * Parses a single g-code (string) line and adds it to GCodeRingBuffer if 
+ * valid g-code was found.
+ *
+ * @note: Replaces the following functions
+ * - get_serial_commands: Reads command from serial, analyze it and adds to buffer
  *
  * \project BlueMarlin
  * \author kein0r
  *
  */
-
 
 /** \addtogroup GCodeParser
  * @{
@@ -39,6 +41,7 @@
 
 /* ******************| Inclusions |************************************ */
 #include "gCodeParser.h"
+#include <gCodeRingBuffer.h>
 
 /* ******************| Macros |**************************************** */
 
@@ -51,19 +54,24 @@ int GCodeParser_templateFunction(int i, int *s);
 /* ******************| Global Variables |****************************** */
 
 /* ******************| Function Implementation |*********************** */
+
+void readGCodes()
+{
+  parse(readGcodesFromSerial());
+  
+}
 /**
- * \brief GCodeParser function
- * Document your function here. Function names shall start with module names
- * followed by an underscore followed by the function name starting with a 
- * lowercase letter using cammelCase notion.
- * Dont' forget to also describe the parameters of your function including
- * their direction. Also describe the return values, if any.
+ * Parses a single g-code (string) line and adds it to GCodeRingBuffer if 
+ * valid g-code was found. The g-code will be ignored if
+ * - 
+
  * @param[in]  		i	Example input parameter
  * @param[in/out]	i	Example input/output parameter
  * @return			This function returns result X
 */
-int GCodeParser_templateFunction(int i, int *s)
+int GCodeParser_parse(char *data)
 {
+	while (*
 	return i;
 }
 
