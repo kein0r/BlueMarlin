@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_q8fHMMXDEea5vMWY2OwV2Q" name="RootElement">
+  <packagedElement xmi:type="uml:Package" xmi:id="_CM4EgMXEEea5vMWY2OwV2Q" name="KinematicsAndDynamics"/>
+  <packagedElement xmi:type="uml:Package" xmi:id="_CM8V8MXEEea5vMWY2OwV2Q" name="Interface">
+    <packagedElement xmi:type="uml:Component" xmi:id="_CM8V8cXEEea5vMWY2OwV2Q" name="SerialReader">
+      <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_Gd-DQMXlEea5vMWY2OwV2Q" client="_CM8V8cXEEea5vMWY2OwV2Q" supplier="_DQy8oMXlEea5vMWY2OwV2Q" contract="_DQy8oMXlEea5vMWY2OwV2Q"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Interface" xmi:id="_DQy8oMXlEea5vMWY2OwV2Q" name="read"/>
+    <packagedElement xmi:type="uml:Component" xmi:id="_oDn4EMaREea1dIvDqNpGGg" name="CopyOf_SerialReader_1">
+      <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_oDn4EcaREea1dIvDqNpGGg" client="_oDn4EMaREea1dIvDqNpGGg _oDn4EMaREea1dIvDqNpGGg _oDn4EMaREea1dIvDqNpGGg" supplier="_DQy8oMXlEea5vMWY2OwV2Q" contract="_DQy8oMXlEea5vMWY2OwV2Q"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Component" xmi:id="_qPmncMaREea1dIvDqNpGGg" name="CopyOf_SerialReader_2">
+      <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_qPmnccaREea1dIvDqNpGGg" client="_qPmncMaREea1dIvDqNpGGg _qPmncMaREea1dIvDqNpGGg _qPmncMaREea1dIvDqNpGGg" supplier="_DQy8oMXlEea5vMWY2OwV2Q" contract="_DQy8oMXlEea5vMWY2OwV2Q"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Component" xmi:id="_s0WcIMaREea1dIvDqNpGGg" name="SDCardReader">
+      <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_z3PQEMaREea1dIvDqNpGGg" client="_s0WcIMaREea1dIvDqNpGGg" supplier="_vbT3UMaREea1dIvDqNpGGg" contract="_vbT3UMaREea1dIvDqNpGGg"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Interface" xmi:id="_vbT3UMaREea1dIvDqNpGGg" name="read"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Package" xmi:id="_CM89AMXEEea5vMWY2OwV2Q" name="ApplicationLayer">
+    <packagedElement xmi:type="uml:Component" xmi:id="_CM89AcXEEea5vMWY2OwV2Q" name="GCodeRead">
+      <ownedAttribute xmi:type="uml:Property" xmi:id="_CM89AsXEEea5vMWY2OwV2Q" name="commandparser"/>
+      <packagedElement xmi:type="uml:Component" xmi:id="_CM89A8XEEea5vMWY2OwV2Q" name="GCodeParser"/>
+      <packagedElement xmi:type="uml:Component" xmi:id="_CM89BMXEEea5vMWY2OwV2Q" name="GCodeInterpreter">
+        <ownedAttribute xmi:type="uml:Property" xmi:id="_CM89BcXEEea5vMWY2OwV2Q" name="commandparser"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="_CM89BsXEEea5vMWY2OwV2Q" name="GCodeParser"/>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Component" xmi:id="_CM89B8XEEea5vMWY2OwV2Q" name="CopyOf_GCodeInterpreter_1">
+        <ownedAttribute xmi:type="uml:Property" xmi:id="_CM89CMXEEea5vMWY2OwV2Q" name="commandparser"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="_CM89CcXEEea5vMWY2OwV2Q" name="GCodeParser"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="_CM89CsXEEea5vMWY2OwV2Q" name="GCodeInterpreter">
+          <ownedAttribute xmi:type="uml:Property" xmi:id="_CM89C8XEEea5vMWY2OwV2Q" name="commandparser"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="_CM89DMXEEea5vMWY2OwV2Q" name="GCodeParser"/>
+        </packagedElement>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Usage" xmi:id="_ZRQjIMXlEea5vMWY2OwV2Q" client="_CM89AcXEEea5vMWY2OwV2Q" supplier="_CM89IsXEEea5vMWY2OwV2Q"/>
+      <packagedElement xmi:type="uml:Usage" xmi:id="_0iM4oMaREea1dIvDqNpGGg" client="_CM89AcXEEea5vMWY2OwV2Q" supplier="_vbT3UMaREea1dIvDqNpGGg"/>
+      <packagedElement xmi:type="uml:Usage" xmi:id="_2ikN4MaREea1dIvDqNpGGg" client="_CM89AcXEEea5vMWY2OwV2Q" supplier="_DQy8oMXlEea5vMWY2OwV2Q"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Component" xmi:id="_CM89E8XEEea5vMWY2OwV2Q" name="GCodeRingBuffer">
+      <ownedAttribute xmi:type="uml:Property" xmi:id="_CM89FMXEEea5vMWY2OwV2Q" name="commandparser"/>
+      <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_CM89FcXEEea5vMWY2OwV2Q" client="_CM89E8XEEea5vMWY2OwV2Q" supplier="_CM89I8XEEea5vMWY2OwV2Q" contract="_CM89I8XEEea5vMWY2OwV2Q"/>
+      <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_ccphEMXlEea5vMWY2OwV2Q" client="_CM89E8XEEea5vMWY2OwV2Q" supplier="_CM89JMXEEea5vMWY2OwV2Q" contract="_CM89JMXEEea5vMWY2OwV2Q"/>
+      <interfaceRealization xmi:type="uml:InterfaceRealization" xmi:id="_dTFZ0MXlEea5vMWY2OwV2Q" client="_CM89E8XEEea5vMWY2OwV2Q" supplier="_CM89IsXEEea5vMWY2OwV2Q" contract="_CM89IsXEEea5vMWY2OwV2Q"/>
+      <packagedElement xmi:type="uml:Component" xmi:id="_CM89GMXEEea5vMWY2OwV2Q" name="GCodeParser"/>
+      <packagedElement xmi:type="uml:Component" xmi:id="_CM89GcXEEea5vMWY2OwV2Q" name="GCodeInterpreter">
+        <ownedAttribute xmi:type="uml:Property" xmi:id="_CM89GsXEEea5vMWY2OwV2Q" name="commandparser"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="_CM89G8XEEea5vMWY2OwV2Q" name="GCodeParser"/>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Component" xmi:id="_CM89HMXEEea5vMWY2OwV2Q" name="CopyOf_GCodeInterpreter_1">
+        <ownedAttribute xmi:type="uml:Property" xmi:id="_CM89HcXEEea5vMWY2OwV2Q" name="commandparser"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="_CM89HsXEEea5vMWY2OwV2Q" name="GCodeParser"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="_CM89H8XEEea5vMWY2OwV2Q" name="GCodeInterpreter">
+          <ownedAttribute xmi:type="uml:Property" xmi:id="_CM89IMXEEea5vMWY2OwV2Q" name="commandparser"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="_CM89IcXEEea5vMWY2OwV2Q" name="GCodeParser"/>
+        </packagedElement>
+      </packagedElement>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Interface" xmi:id="_CM89IsXEEea5vMWY2OwV2Q" name="write"/>
+    <packagedElement xmi:type="uml:Interface" xmi:id="_CM89I8XEEea5vMWY2OwV2Q" name="Read"/>
+    <packagedElement xmi:type="uml:Interface" xmi:id="_CM89JMXEEea5vMWY2OwV2Q" name="available"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Package" xmi:id="_EoNS4MaSEea1dIvDqNpGGg" name="HAL">
+    <packagedElement xmi:type="uml:Component" xmi:id="_Gw7A8MaUEea1dIvDqNpGGg" name="Serial"/>
+  </packagedElement>
+</uml:Model>
