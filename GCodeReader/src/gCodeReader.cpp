@@ -69,27 +69,28 @@ void GCodeReader_addGCode(uint8_t *data);
 */
 void GCodeReader_readGCodeSerial()
 {
-  char gCodeBuffer[GCODEREADER_GCODEBUFFER_SIZE];
+  uint8_t gCodeBuffer[GCODEREADER_GCODEBUFFER_SIZE];
   uint8_t numberOfBytesRead = 0;
   
   for (int i=0; i<GCODEREADER_NUMBEROFGCODESTOREAD; i++)
   {
-    numberOfBytesRead = Serial.Read(*gCodeBuffer, GCODEREADER_GCODEBUFFER_SIZE)
+    //numberOfBytesRead = Serial.Read(*gCodeBuffer, GCODEREADER_GCODEBUFFER_SIZE)
     if (numberOfBytesRead > 0)
     {
-      GCodeReader_addGCode(&gCodeBuffer);
+      GCodeReader_addGCode(gCodeBuffer);
     }
   }
 }
 
 /** 
- * \brief Analyses, compresses and inserts g-code data in #data into ringbuffer
+ * \brief Analyzes, compresses and inserts g-code data in #data into ringbuffer
  *
- * Compresses the g-code data in #data 
+ * Converts the g-code data to upper case and compresses it in-place, thus in #data.
  * - Removes the following special fields (see http://reprap.org/wiki/Gcode#Special_fields)
  * -- N: Line number
  * -- Checks and removes "*: Checksum"
- * - Removes any blanc character, that is, blanc or tab
+ * -- Comments starting with ;
+ * - Removes any blank character, that is, blank or tab
  * @param[in/out] data Pointer to buffer holding g-code data. A null terminated string
  * is expected.
  */
@@ -98,9 +99,10 @@ void GCodeReader_addGCode(uint8_t *data)
   bool ignoreUntilNextValidChar = false;
   uint8_t *nextChar = data; /* Place to write next character for in-place compression */
   uint8_t calculatedCRC = 0x00;
+  uint8_t processCounter = 0x00;
   
   /* Parse the complete string first to calculate CRC and do in-place compression */
-  while (data++)
+  while ((data++) && (processCounter < GCODEREADER_NUMBEROFGCODESTOREAD))
   {
     /* Calculate CRC according to formula found at http://reprap.org/wiki/Gcode#Checking */
     calculatedCRC ^= *data;
@@ -111,6 +113,7 @@ void GCodeReader_addGCode(uint8_t *data)
     case 'N':
     case '*':
     case ' ':
+    case ';':
     case '\t':
       ignoreUntilNextValidChar = true;
       break;
@@ -132,7 +135,8 @@ void GCodeReader_addGCode(uint8_t *data)
       ignoreUntilNextValidChar = false;
     break;
     default:
-      break;
+
+    break;
     }
     /* Only add character to buffer if valid */
     if (ignoreUntilNextValidChar == false)
@@ -145,8 +149,10 @@ void GCodeReader_addGCode(uint8_t *data)
     {
       /* do nothing */
     }
-  } /* while (data++) */
-  /* Write null termination at the end of compressed string */
+    processCounter++;
+  } /* while((data++) && (processCounter < GCODEREADER_NUMBEROFGCODESTOREAD)) */
+
+  /* Terminate the compressed string */
   *nextChar = '\0';
   
   /** @todo Add CRC check here */
