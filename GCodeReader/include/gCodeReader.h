@@ -19,39 +19,58 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#if (!defined GCODEPARSER_INCLUDE_GCODEPARSER_H_)
+#if (!defined GCODEREADER_INCLUDE_GCODEPARSER_H_)
 /* Preprocessor exclusion definition */
-#define GCODEPARSER_INCLUDE_GCODEPARSER_H_
+#define GCODEREADER_INCLUDE_GCODEPARSER_H_
 /**
  * \file gCodeParser.h
  *
- * \brief GCodeParser include file
+ * \brief GCodeReader include file
  *
  * Include files should start with a lowercase character and use cammelCase
  * notation.
  *
  * \project BlueMarlin
- * \author <FULL NAME>
+ * \author kein0r
  *
  */
 
 
-/** \addtogroup GCodeParser
+/** \addtogroup GCodeReader
  * @{
  */
 
 /* ******************| Inclusions |************************************ */
 
 /* ******************| Macros |**************************************** */
+/**
+ * Buffer to read g-codes from different source, currently serial and
+ * sd-card.
+ */
+#ifndef GCODEREADER_GCODEBUFFER_SIZE
+#define GCODEREADER_GCODEBUFFER_SIZE      (uint8_t)20
+#endif
+
+/**
+ * Number of lines to read from each of the sources during on call of 
+ * #GCodeReader_readGCodeSerial. This number must be chosen big enough to 
+ * not lose g-codes in serial buffer but should also chose small enough
+ * to not block the system for too long
+ */
+#ifndef GCODEREADER_NUMBEROFGCODESTOREAD
+#define GCODEREADER_NUMBEROFGCODESTOREAD  (uint8_t)4
+#endif
 
 /* ******************| Type definitions |****************************** */
 
 /* ******************| External function declarations |**************** */
+extern void GCodeReader_readGCodeSerial();
+extern void GCodeReader_addGCode(uint8_t *data);
 
 /* ******************| External constants |**************************** */
 
 /* ******************| External variables |**************************** */
 
 /** @} doxygen end group definition */
-#endif /* if !defined( GCODEPARSER_INCLUDE_GCODEPARSER_H_ ) */
+#endif /* if !defined( GCODEREADER_INCLUDE_GCODEPARSER_H_ ) */
 /* ******************| End of file |*********************************** */
