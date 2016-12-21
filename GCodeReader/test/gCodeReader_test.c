@@ -1,18 +1,18 @@
 /**
- * \file template_test_drv.c
+ * \file gCodeReader_test.c
  *
- * \brief Template source file
+ * \brief GCodeReader unit test implementation
  *
- * File names should start with lowercase character and use cammelCase
- * notation.
+ * Please see http://embunit.sourceforge.net/ for more information. For
+ * detailed documentation see http://embunit.sourceforge.net/embunit/index.html
  *
  * \project BlueMarlin
- * \author <FULL NAME>
+ * \author kein0r
  *
  */
 
 
-/** \addtogroup Template
+/** \addtogroup GCodeReader
  * @{
  */
 
