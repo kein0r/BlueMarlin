@@ -17,6 +17,10 @@
  */
 
 /* ******************| Inclusions |************************************ */
+#include "gCodeReader_test.h"
+/* Include .cpp file to be tested in order to get access to all private
+ * or static functions */
+#include <gCodeReader.cpp>
 
 /* ******************| Macros |**************************************** */
 
@@ -42,6 +46,14 @@ static void GCodeReader_parse_1(void)
 }
 
 /**
+ * Test Setup function which is called before all each test case
+ */
+static void setUp(void)
+{
+
+}
+
+/**
  * Test Teardown function which is called for after each test
  */
 static void tearDown(void)
@@ -49,13 +61,13 @@ static void tearDown(void)
 
 }
 
-TestRef GCodeRingBuffer_test_RunTests(void)
+TestRef GCodeReader_test_RunTests(void)
 {
   EMB_UNIT_TESTFIXTURES(fixtures) {
     new_TestFixture("Test case GCodeReader_parse_1", GCodeReader_parse_1)
   };
-  EMB_UNIT_TESTCALLER(GCodeReader_test_RunTests,"GCodeRingBuffer Unit test",setUp,tearDown,fixtures);
-  return (TestRef)&GCodeReader_test_RunTests;
+  EMB_UNIT_TESTCALLER(GCodeReader_tests,"GCodeRingBuffer Unit test",setUp,tearDown,fixtures);
+  return (TestRef)&GCodeReader_tests;
 }
 
 /**
