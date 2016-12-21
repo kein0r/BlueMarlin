@@ -27,7 +27,8 @@
  *
  * \brief GCodeRingBuffer include file
  *
- * This ringbuffer will contain compressed (see #GCodeReader) machine codes. 
+ * This ringbuffer will contain compressed (see #GCodeReader) machine codes.
+ * G-codes in the ringbuffer must be 0-terminated like strings. 
  * The length of the buffer #GCODERINGBUFFER_RINGBUFFER_SIZE should therefore
  * be chosen big enough.
  *
@@ -44,7 +45,6 @@
 #include <platform.h>
 
 /* ******************| Macros |**************************************** */
-#ifndef GCODERINGBUFFER_RINGBUFFER_SIZE
 /**
  * Default number of entries in ringbuffer. Its possible to override default 
  * value for GCODERINGBUFFER_RINGBUFFER_SIZE via configuration.h or compiler
@@ -52,6 +52,7 @@
  * @note: Due to the way empty available bytes are calculated, 
  * GCODERINGBUFFER_RINGBUFFER_SIZE must be always to the power of two.
  */
+#ifndef GCODERINGBUFFER_RINGBUFFER_SIZE
 #define GCODERINGBUFFER_RINGBUFFER_SIZE      (uint8_t)64
 #endif
 

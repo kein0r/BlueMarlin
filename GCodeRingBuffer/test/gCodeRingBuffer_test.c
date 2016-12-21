@@ -1,5 +1,5 @@
 /**
- * \file gCodeRingBuffer_test_drv.c
+ * \file gCodeRingBuffer_test.c
  *
  * \brief GCodeRingBuffer unit test implementation
  *
@@ -20,7 +20,6 @@
 #include "gCodeRingBuffer_test.h"
 /* Include .cpp file to be tested in order to get access to all private
  * or static functions */
-#define UNIT_TEST
 #include <gCodeRingBuffer.cpp>
 
 /* ******************| Macros |**************************************** */
