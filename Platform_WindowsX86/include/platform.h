@@ -67,7 +67,7 @@ typedef unsigned   uint32_t;
 
 /*
  * Platform module shall specify bool datatype and TRUE/FALSE.
- * @note Not sure how this works in conjunction with the cppp bool definition.
+ * @note Not sure how this works in conjunction with the cpp bool definition.
  */
  #ifndef __cplusplus
 typedef unsigned char bool;
