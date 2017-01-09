@@ -58,7 +58,7 @@ clean:
 run: $(OUTPUT).exe
 	$(OUTPUT)
 	@echo .
-	gcov gCodeRingBuffer_test.c
+	gcov gCodeReader_test.c
 	
 $(EMBUNIT_DIR)/lib/libembUnit.a:
 	$(MAKE) --directory=$(EMBUNIT_DIR)/embUnit

@@ -47,9 +47,13 @@
 /**
  * Buffer to read g-codes from different source, currently serial and
  * sd-card.
+ * Assumption: A g-code at least consist of Mxxx Xxxx.xxx Yxxx.xxx Zxxx.xxx
+ * Exxx.xx Fxxxx
+ * In total 45 characters. A default value of 60 characters is therefore
+ * chosen.
  */
 #ifndef GCODEREADER_GCODEBUFFER_SIZE
-#define GCODEREADER_GCODEBUFFER_SIZE      (uint8_t)20
+#define GCODEREADER_GCODEBUFFER_SIZE      (uint8_t)60
 #endif
 
 /**

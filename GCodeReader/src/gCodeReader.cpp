@@ -93,6 +93,7 @@ void GCodeReader_readGCodeSerial()
  * - Removes any blank character, that is, blank or tab
  * @param[in/out] data Pointer to buffer holding g-code data. A null terminated string
  * is expected.
+ * @note U,V,W parameter is not supported. Q parameter is not supported.
  */
 void GCodeReader_addGCode(uint8_t *data)
 {
@@ -101,8 +102,9 @@ void GCodeReader_addGCode(uint8_t *data)
   uint8_t calculatedCRC = 0x00;
   uint8_t processCounter = 0x00;
   
-  /* Parse the complete string first to calculate CRC and do in-place compression */
-  while ((data++) && (processCounter < GCODEREADER_NUMBEROFGCODESTOREAD))
+  /* Parse the complete string first to calculate CRC and do in-place compression. Stop
+   * when comment is detected. Make sure to not parse more than buffer length. */
+  while ((*data != '\0') && (processCounter < GCODEREADER_GCODEBUFFER_SIZE))
   {
     /* Calculate CRC according to formula found at http://reprap.org/wiki/Gcode#Checking */
     calculatedCRC ^= *data;
@@ -110,10 +112,10 @@ void GCodeReader_addGCode(uint8_t *data)
     *data = toupper(*data);
     switch (*data)
     {
+    case ';':
     case 'N':
     case '*':
     case ' ':
-    case ';':
     case '\t':
       ignoreUntilNextValidChar = true;
       break;
@@ -133,10 +135,10 @@ void GCodeReader_addGCode(uint8_t *data)
     case 'R':
     case 'E':
       ignoreUntilNextValidChar = false;
-    break;
+      break;
     default:
-
-    break;
+      /* do nothing */
+      break;
     }
     /* Only add character to buffer if valid */
     if (ignoreUntilNextValidChar == false)
@@ -149,6 +151,8 @@ void GCodeReader_addGCode(uint8_t *data)
     {
       /* do nothing */
     }
+    /* Move to next character */
+    data++;
     processCounter++;
   } /* while((data++) && (processCounter < GCODEREADER_NUMBEROFGCODESTOREAD)) */
 
