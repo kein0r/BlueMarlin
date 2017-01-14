@@ -96,7 +96,7 @@ LINK_OPTS +=
 #
 # Link final binary from object files
 all: $(CC_TO_OBJ_TO_BUILD)
-	$(CC) -o BlueMarlin.exe $(CC_TO_OBJ_TO_BUILD)
+	$(CPP) -o BlueMarlin.exe $(CC_TO_OBJ_TO_BUILD)
 
 #
 # Target to delete all files generated during compilation as well as 
@@ -150,7 +150,7 @@ show:
 # Generic rule to compile .cpp -> .o (and create corresponding dependency Makefile)
 %.o: %.cpp
 %.o: %.cpp %.d
-	$(CPP) -c $(DEP_OPTS) $(CC_OPTS) $(CPP_INCLUDE) $< -o $@
+	$(CPP) -c $(DEP_OPTS) $(CPP_OPTS) $(CPP_INCLUDE) $< -o $@
 #
 # Include generated dependency Makefile if they exist
 -include $(CPP_DEP_FILES)
