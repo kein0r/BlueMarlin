@@ -15,7 +15,8 @@
  */
 
 /* ******************| Inclusions |************************************ */
-#include "gCodeRingBuffer_test.h"
+#include "RingBuffer_test.h"
+#include "stdio.h"
 /* Include .cpp file to be tested in order to get access to all private
  * or static functions */
 
@@ -58,7 +59,7 @@ static void RingBuffer_RingBuffer_ReadChar_1(void)
  * RESULT_OK
  * Test if ringbuffer is empty afterwards
  */
-static void RingBuffer_RingBuffer_Read_2(void)
+static void RingBuffer_RingBuffer_ReadChar_2(void)
 {
   char element = 0xaa;
   /* Insert on random element in empty ringbuffer */
@@ -80,7 +81,7 @@ static void RingBuffer_RingBuffer_Read_2(void)
  * Test if value is the same as written
  * Test if ringbuffer is empty again
  */
-static void RingBuffer_RingBuffer_Write_1(void)
+static void RingBuffer_RingBuffer_WriteChar_1(void)
 {
   /* Write two elements to rinbuffer */
   char element = 0xaa;
@@ -93,12 +94,12 @@ static void RingBuffer_RingBuffer_Write_1(void)
   
   /* Readback first element from buffer and check its value */
   TEST_ASSERT_EQUAL_INT(RESULT_OK, charRingBuffer->read(&element));
-  TEST_ASSERT_EQUAL_INT(0xaa, element);
+  TEST_ASSERT_EQUAL_INT((char)0xaa, element);
   
   /* Readback first element from buffer and check its value */
   TEST_ASSERT_EQUAL_INT(1, charRingBuffer->available());
   TEST_ASSERT_EQUAL_INT(RESULT_OK, charRingBuffer->read(&element));
-  TEST_ASSERT_EQUAL_INT(0xbb, element);
+  TEST_ASSERT_EQUAL_INT((char)0xbb, element);
   
   /* Check if buffer is empty again */
   TEST_ASSERT_EQUAL_INT(0, charRingBuffer->available());
@@ -115,7 +116,7 @@ static void RingBuffer_RingBuffer_Write_1(void)
  * Test if read returns RESULT_OK as long as ringbuffer contains values
  * Test if read returns RESULT_NOT_OK if buffer is empty again
  */
-static void RingBuffer_RingBuffer_Write_2(void)
+static void RingBuffer_RingBuffer_WriteChar_2(void)
 {
   char element = 0xaa;
   for (int i=0; i<RINGBUFFER_RINGBUFFER_TESTSIZE; i++)
@@ -128,7 +129,7 @@ static void RingBuffer_RingBuffer_Write_2(void)
    * RESULT_NOT_OK */
    TEST_ASSERT_EQUAL_INT(RESULT_NOT_OK, charRingBuffer->write(element));
    
-  /* Check if values can be read back correctly int the same sequence */
+  /* Check if values can be read back correctly and in the same sequence */
   for (int i=0; i<RINGBUFFER_RINGBUFFER_TESTSIZE; i++)
   {
     TEST_ASSERT_EQUAL_INT(RINGBUFFER_RINGBUFFER_TESTSIZE-i, charRingBuffer->available());
@@ -159,10 +160,10 @@ TestRef GCodeRingBuffer_test_RunTests(void)
 {
   EMB_UNIT_TESTFIXTURES(fixtures) {
     new_TestFixture("Test case RingBuffer_RingBuffer_Init_1", RingBuffer_RingBuffer_Init_1),
-    new_TestFixture("Test case RingBuffer_RingBuffer_Read_1", RingBuffer_RingBuffer_ReadChar_1),
-    new_TestFixture("Test case RingBuffer_RingBuffer_Read_2", RingBuffer_RingBuffer_Read_2),
-    new_TestFixture("Test case RingBuffer_RingBuffer_Write_1", RingBuffer_RingBuffer_Write_1),
-    new_TestFixture("Test case RingBuffer_RingBuffer_Write_2", RingBuffer_RingBuffer_Write_2)
+    new_TestFixture("Test case RingBuffer_RingBuffer_ReadChar_1", RingBuffer_RingBuffer_ReadChar_1),
+    new_TestFixture("Test case RingBuffer_RingBuffer_ReadChar_2", RingBuffer_RingBuffer_ReadChar_2),
+    new_TestFixture("Test case RingBuffer_RingBuffer_WriteChar_1", RingBuffer_RingBuffer_WriteChar_1),
+    new_TestFixture("Test case RingBuffer_RingBuffer_WriteChar_2", RingBuffer_RingBuffer_WriteChar_2)
   };
   EMB_UNIT_TESTCALLER(GCodeRingBuffer_tests,"GCodeRingBuffer Unit test",setUp,tearDown,fixtures);
   return (TestRef)&GCodeRingBuffer_tests;
