@@ -20,9 +20,7 @@
  *
  */
 /**
- * \file gCodeRingBuffer.c
- *
- * \brief Ring buffer for g codes
+ * \brief Generic ringbuffer template class
  *
  * Implementation of a ring buffer for g-codes. 
  *
@@ -38,7 +36,7 @@
  */
 
 
-/** \addtogroup GCodeRingBuffer
+/** \addtogroup RingBuffer
  * @{
  */
 
@@ -58,12 +56,12 @@
 /**
  * Initializes RingBuffer module.
  */
-RingBuffer::RingBuffer(void)
+template <class T, uint8_t ringBufferSize>RingBuffer<T, ringBufferSize>::RingBuffer()
 {
-  /* Initialize ring buffer */
-  ringBuffer.head = 0;
-  ringBuffer.tail = 0;
-  ringBuffer.lastOperation = GCODERINGBUFFER_LASTOPERATION_READ; /* Buffer is empty on start-up */
+    /* Initialize ring buffer */
+    ringBuffer.head = 0;
+    ringBuffer.tail = 0;
+    ringBuffer.lastOperation = RINGBUFFER_LASTOPERATION_READ; /* Buffer is empty on start-up */
 }
 
 /**
@@ -76,15 +74,15 @@ RingBuffer::RingBuffer(void)
  * @note This function is non-blocking. If the element can't be added
  * the function will just return.
  */
-uint8_t RingBuffer::write(const GCodeRingBuffer_BufferIndex_t data)
+template <class T, uint8_t ringBufferSize>uint8_t RingBuffer<T, ringBufferSize>::write(const T data)
 {
   uint8_t retVal = RESULT_NOT_OK;
-  if (!GCodeRingBuffer_ringBufferFull(ringBuffer))
+  if (!RingBuffer_ringBufferFull(ringBuffer))
   {
     /* Place data in buffer */
     ringBuffer.buffer[ringBuffer.head] = data;
-    ringBuffer.lastOperation = GCODERINGBUFFER_LASTOPERATION_WRITE;
-    GCodeRingBuffer_incrementIndex(ringBuffer.head);
+    ringBuffer.lastOperation = RINGBUFFER_LASTOPERATION_WRITE;
+    RingBuffer_incrementIndex(ringBuffer.head);
 	retVal = RESULT_OK;
   }
   else
@@ -104,15 +102,15 @@ uint8_t RingBuffer::write(const GCodeRingBuffer_BufferIndex_t data)
  * @return Function will return RESULT_OK in case data was present in 
  * ringbuffer and was copied to #data. RESULT_NOT_OK if not.
  */
-uint8_t RingBuffer::read(GCodeRingBuffer_BufferIndex_t *data)
+template <class T, uint8_t ringBufferSize> uint8_t RingBuffer<T, ringBufferSize>::read(T *data)
 {
   uint8_t retVal = RESULT_NOT_OK;
   
-  if(! GCodeRingBuffer_ringBufferEmpty(ringBuffer) )
+  if(! RingBuffer_ringBufferEmpty(ringBuffer) )
   {
     *data = ringBuffer.buffer[ringBuffer.tail];
-    ringBuffer.lastOperation = GCODERINGBUFFER_LASTOPERATION_READ;
-    GCodeRingBuffer_incrementIndex(ringBuffer.tail);
+    ringBuffer.lastOperation = RINGBUFFER_LASTOPERATION_READ;
+    RingBuffer_incrementIndex(ringBuffer.tail);
 	retVal = RESULT_OK;
   }
   return retVal;
@@ -125,13 +123,13 @@ uint8_t RingBuffer::read(GCodeRingBuffer_BufferIndex_t *data)
  * interrupt context head must be either copied to a local variable or 
  * interrupts shall be locked before calling (noInterrupts()/interrupts())
  */
-uint8_t RingBuffer::available()
+template <class T, uint8_t ringBufferSize> uint8_t RingBuffer<T, ringBufferSize>::available()
 {
   /* Cast to uint8_t is important here because if not compiler will chose sint8_t */
-  uint8_t retVal = (uint8_t)(ringBuffer.head - ringBuffer.tail) % GCODERINGBUFFER_RINGBUFFER_SIZE;
-  if ((retVal == 0) && (ringBuffer.lastOperation == GCODERINGBUFFER_LASTOPERATION_WRITE))
+  uint8_t retVal = (uint8_t)(ringBuffer.head - ringBuffer.tail) % ringBufferSize;
+  if ((retVal == 0) && (ringBuffer.lastOperation == RINGBUFFER_LASTOPERATION_WRITE))
   {
-	retVal = GCODERINGBUFFER_RINGBUFFER_SIZE;
+	retVal = ringBufferSize;
   }
   return retVal;
 }

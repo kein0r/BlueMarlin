@@ -19,25 +19,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#if (!defined GCODERINGBUFFER_INCLUDE_RINGBUFFER_H_)
+#if (!defined RINGBUFFER_INCLUDE_RINGBUFFER_H_)
 /* Preprocessor exclusion definition */
-#define GCODERINGBUFFER_INCLUDE_RINGBUFFER_H_
+#define RINGBUFFER_INCLUDE_RINGBUFFER_H_
 /**
- * \file GCodeRingBuffer.h
- *
- * \brief GCodeRingBuffer include file
- *
- * This ringbuffer will contain compressed (see #GCodeReader) machine codes.
- * G-codes in the ringbuffer must be 0-terminated like strings. 
- * The length of the buffer #GCODERINGBUFFER_RINGBUFFER_SIZE should therefore
- * be chosen big enough.
+ * Generic ringbuffer template class.
  *
  * \project BlueMarlin
  * \author kein0r
  *
  */
 
-/** \addtogroup GCodeRingBuffer
+/** \addtogroup RingBuffer
  * @{
  */
 
@@ -45,69 +38,55 @@
 #include <platform.h>
 
 /* ******************| Macros |**************************************** */
-/**
- * Default number of entries in ringbuffer. Its possible to override default 
- * value for GCODERINGBUFFER_RINGBUFFER_SIZE via configuration.h or compiler
- * by using -DGCODERINGBUFFER_RINGBUFFER_SIZE=32
- * @note: Due to the way empty available bytes are calculated, 
- * GCODERINGBUFFER_RINGBUFFER_SIZE must be always to the power of two.
- */
-#ifndef GCODERINGBUFFER_RINGBUFFER_SIZE
-#define GCODERINGBUFFER_RINGBUFFER_SIZE      (uint8_t)64
-#endif
+#define RINGBUFFER_LASTOPERATION_READ         FALSE
+#define RINGBUFFER_LASTOPERATION_WRITE        TRUE
 
 /* ******************| Type definitions |****************************** */
-/**
- * GCode buffer data. 
- */
-typedef uint8_t GCodeRingBuffer_gCode_t;
 
-/**
- * Typedef for head and tail pointer of ringbuffer
- */
-typedef uint8_t GCodeRingBuffer_BufferIndex_t;
-
-/**
- * Datatype to keep track of last operation to ring buffer. FALSE if last 
- * operation was a read, otherwise last operation was a write to buffer 
- */
-typedef bool GCodeRingBuffer_lastOperation_t; 
-#define GCODERINGBUFFER_LASTOPERATION_READ         FALSE
-#define GCODERINGBUFFER_LASTOPERATION_WRITE        TRUE
-
-/**
- * Data structure for ring buffer.
- * Index pointer for head and tail will always point to element which is next to be read/written.
- * This ring buffer will use "Record last operation" for full/empty buffer distinction see
- * https://en.wikipedia.org/wiki/Circular_buffer "Record last operation" for details
- */
-typedef struct
-{
-  GCodeRingBuffer_gCode_t buffer[GCODERINGBUFFER_RINGBUFFER_SIZE];  /*!< Content of ring buffer */
-  GCodeRingBuffer_BufferIndex_t head;                               /*!< Index for writing to the ring buffer. Index is increased after writing (i.e. producing) an element */
-  GCodeRingBuffer_BufferIndex_t tail;                               /*!< Index for reading from ring buffer. Index is increased after reading (i.e consuming) an element. */
-  GCodeRingBuffer_lastOperation_t lastOperation;                    /*!< False if last operation was reading the buffer, true if last operation was writting into the buffer */
-} GCodeRingBuffer_RingBuffer_t;
 /* Some function like macro to make code more readable */
-#define GCodeRingBuffer_incrementIndex(a)          a = (a + 1) % GCODERINGBUFFER_RINGBUFFER_SIZE
-#define GCodeRingBuffer_ringBufferFull(x)          (x.lastOperation == GCODERINGBUFFER_LASTOPERATION_WRITE && (x.head == x.tail))
-#define GCodeRingBuffer_ringBufferEmpty(x)         (x.lastOperation == GCODERINGBUFFER_LASTOPERATION_READ && (x.head == x.tail))
+#define RingBuffer_incrementIndex(a)          a = (a + 1) % ringBufferSize
+#define RingBuffer_ringBufferFull(x)          (x.lastOperation == RINGBUFFER_LASTOPERATION_WRITE && (x.head == x.tail))
+#define RingBuffer_ringBufferEmpty(x)         (x.lastOperation == RINGBUFFER_LASTOPERATION_READ && (x.head == x.tail))
 
 
-class RingBuffer
+template <class T, uint8_t ringBufferSize> class RingBuffer
 {
-#if defined(UNIT_TEST)
-  friend class UnitTest;
-#endif
+
+    /**
+     * Datatype to keep track of last operation to ring buffer. FALSE if last
+     * operation was a read, otherwise last operation was a write to buffer
+     */
+    typedef bool RingBuffer_lastOperation_t;
+
+
+    /**
+     * Typedef for head and tail pointer of ringbuffer
+     */
+    typedef uint8_t RingBuffer_BufferIndex_t;
+
+    /**
+    * Data structure for ring buffer.
+    * Index pointer for head and tail will always point to element which is next to be read/written.
+    * This ring buffer will use "Record last operation" for full/empty buffer distinction see
+    * https://en.wikipedia.org/wiki/Circular_buffer "Record last operation" for details
+    */
+    typedef struct
+    {
+        T buffer[ringBufferSize];                  /*!< Content of ring buffer */
+        RingBuffer_BufferIndex_t head;             /*!< Index for writing to the ring buffer. Index is increased after writing (i.e. producing) an element */
+        RingBuffer_BufferIndex_t tail;             /*!< Index for reading from ring buffer. Index is increased after reading (i.e consuming) an element. */
+        RingBuffer_lastOperation_t lastOperation;  /*!< False if last operation was reading the buffer, true if last operation was writting into the buffer */
+    } RingBuffer_RingBuffer_t;
 
 private:
-  GCodeRingBuffer_RingBuffer_t ringBuffer;
+    RingBuffer_RingBuffer_t ringBuffer;
+
   
 public:
-  RingBuffer();
-  uint8_t write(GCodeRingBuffer_gCode_t data);
-  uint8_t read(GCodeRingBuffer_BufferIndex_t *data);
-  uint8_t available();
+    RingBuffer();
+    uint8_t write(T data);
+    uint8_t read(T *data);
+    uint8_t available();
 };
 
 /* ******************| External function declarations |**************** */
@@ -117,5 +96,5 @@ public:
 /* ******************| External variables |**************************** */
 
 /** @} doxygen end group definition */
-#endif /* if !defined( GCODERINGBUFFER_INCLUDE_RINGBUFFER_H_ ) */
+#endif /* if !defined( RINGBUFFER_INCLUDE_RINGBUFFER_H_ ) */
 /* ******************| End of file |*********************************** */

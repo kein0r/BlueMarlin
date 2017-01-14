@@ -20,6 +20,7 @@
 #include <embUnit/embUnit.h>
 
 /* ******************| Macros |**************************************** */
+#define RINGBUFFER_RINGBUFFER_TESTSIZE      20
 
 /* ******************| Type definitions |****************************** */
 

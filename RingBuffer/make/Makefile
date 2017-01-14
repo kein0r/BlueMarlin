@@ -1,12 +1,12 @@
 # \file
 #
-# \brief Makefile for GCodeRingBuffer
+# \brief Makefile for RingBuffer
 # 
 # \author kein0r
 #
 # Add this module to the list of modules. Make sure that the module name matches
 # the directory name of the module.
-MODULE_NAME := GCodeRingBuffer
+MODULE_NAME := RingBuffer
 
 #
 # Generic defines which are usually not changed

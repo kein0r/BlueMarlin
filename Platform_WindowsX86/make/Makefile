@@ -82,7 +82,7 @@ CC_OPTS +=
 
 #
 # Define compile options for cpp-files special for this platform
-CPP_OPTS +=
+CPP_OPTS += -Wall -O2 -std=c++11
 
 #
 # Options used for dependency calculation

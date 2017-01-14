@@ -41,7 +41,7 @@
 
 /* ******************| Inclusions |************************************ */
 #include "gCodeReader.h"
-#include <gCodeRingBuffer.h>
+#include <ringBuffer.h>
 #include <ctype.h>
 
 /* ******************| Macros |**************************************** */
