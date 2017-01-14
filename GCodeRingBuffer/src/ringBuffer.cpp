@@ -43,7 +43,7 @@
  */
 
 /* ******************| Inclusions |************************************ */
-#include "gCodeRingBuffer.h"
+#include "ringBuffer.h"
 
 /* ******************| Macros |**************************************** */
 
@@ -56,9 +56,9 @@
 /* ******************| Function Implementation |*********************** */
 
 /**
- * Initializes GCodeRingBuffer module.
+ * Initializes RingBuffer module.
  */
-GCodeRingBuffer::GCodeRingBuffer(void)
+RingBuffer::RingBuffer(void)
 {
   /* Initialize ring buffer */
   ringBuffer.head = 0;
@@ -76,7 +76,7 @@ GCodeRingBuffer::GCodeRingBuffer(void)
  * @note This function is non-blocking. If the element can't be added
  * the function will just return.
  */
-uint8_t GCodeRingBuffer::write(const GCodeRingBuffer_BufferIndex_t data)
+uint8_t RingBuffer::write(const GCodeRingBuffer_BufferIndex_t data)
 {
   uint8_t retVal = RESULT_NOT_OK;
   if (!GCodeRingBuffer_ringBufferFull(ringBuffer))
@@ -104,7 +104,7 @@ uint8_t GCodeRingBuffer::write(const GCodeRingBuffer_BufferIndex_t data)
  * @return Function will return RESULT_OK in case data was present in 
  * ringbuffer and was copied to #data. RESULT_NOT_OK if not.
  */
-uint8_t GCodeRingBuffer::read(GCodeRingBuffer_BufferIndex_t *data)
+uint8_t RingBuffer::read(GCodeRingBuffer_BufferIndex_t *data)
 {
   uint8_t retVal = RESULT_NOT_OK;
   
@@ -125,7 +125,7 @@ uint8_t GCodeRingBuffer::read(GCodeRingBuffer_BufferIndex_t *data)
  * interrupt context head must be either copied to a local variable or 
  * interrupts shall be locked before calling (noInterrupts()/interrupts())
  */
-uint8_t GCodeRingBuffer::available()
+uint8_t RingBuffer::available()
 {
   /* Cast to uint8_t is important here because if not compiler will chose sint8_t */
   uint8_t retVal = (uint8_t)(ringBuffer.head - ringBuffer.tail) % GCODERINGBUFFER_RINGBUFFER_SIZE;

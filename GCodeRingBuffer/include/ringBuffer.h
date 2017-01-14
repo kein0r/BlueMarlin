@@ -19,9 +19,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#if (!defined GCODERINGBUFFER_INCLUDE_GCODERINGBUFFER_H_)
+#if (!defined GCODERINGBUFFER_INCLUDE_RINGBUFFER_H_)
 /* Preprocessor exclusion definition */
-#define GCODERINGBUFFER_INCLUDE_GCODERINGBUFFER_H_
+#define GCODERINGBUFFER_INCLUDE_RINGBUFFER_H_
 /**
  * \file GCodeRingBuffer.h
  *
@@ -94,7 +94,7 @@ typedef struct
 #define GCodeRingBuffer_ringBufferEmpty(x)         (x.lastOperation == GCODERINGBUFFER_LASTOPERATION_READ && (x.head == x.tail))
 
 
-class GCodeRingBuffer
+class RingBuffer
 {
 #if defined(UNIT_TEST)
   friend class UnitTest;
@@ -104,7 +104,7 @@ private:
   GCodeRingBuffer_RingBuffer_t ringBuffer;
   
 public:
-  GCodeRingBuffer();
+  RingBuffer();
   uint8_t write(GCodeRingBuffer_gCode_t data);
   uint8_t read(GCodeRingBuffer_BufferIndex_t *data);
   uint8_t available();
@@ -117,5 +117,5 @@ public:
 /* ******************| External variables |**************************** */
 
 /** @} doxygen end group definition */
-#endif /* if !defined( GCODERINGBUFFER_INCLUDE_GCODERINGBUFFER_H_ ) */
+#endif /* if !defined( GCODERINGBUFFER_INCLUDE_RINGBUFFER_H_ ) */
 /* ******************| End of file |*********************************** */
