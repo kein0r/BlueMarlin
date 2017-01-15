@@ -58,6 +58,7 @@
  */
 template <class T, uint8_t ringBufferSize>RingBuffer<T, ringBufferSize>::RingBuffer()
 {
+	static_assert(!(ringBufferSize && ((ringBufferSize & (ringBufferSize-1)))), "ringBufferSize must be to the power of two (2, 4, 16, 32, ...)");
     /* Initialize ring buffer */
     ringBuffer.head = 0;
     ringBuffer.tail = 0;
