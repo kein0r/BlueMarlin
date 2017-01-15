@@ -1,6 +1,4 @@
 /**
- * \file template_test_drv_stub.c
- *
  * \brief Template source file for unit test stubs
  *
  * All stubs needed for the unit test of this particular modules shall

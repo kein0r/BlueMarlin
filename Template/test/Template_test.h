@@ -2,8 +2,6 @@
 /* Preprocessor exclusion definition */
 #define TEMPLATE_TEST_DRV_H_
 /** 
- * \file template_test_drv.h 
- * 
  * \brief Template include file for test driver
  *
  * \project BlueMarlin

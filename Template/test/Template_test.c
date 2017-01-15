@@ -1,6 +1,4 @@
 /**
- * \file template_test_drv.c
- *
  * \brief Template source file
  *
  * File names should start with lowercase character and use cammelCase

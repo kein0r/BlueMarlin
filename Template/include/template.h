@@ -23,8 +23,6 @@
 /* Preprocessor exclusion definition */
 #define TEMPLATE_INCLUDE_TEMPLATE_H_
 /**
- * \file Template.h
- *
  * \brief Template include file
  *
  * Include files should start with a lowercase character and use cammelCase
