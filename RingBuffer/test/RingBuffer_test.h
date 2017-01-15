@@ -18,6 +18,7 @@
 
 /* ******************| Inclusions |************************************ */
 #include <embUnit/embUnit.h>
+#include <platform.h>
 
 /* ******************| Macros |**************************************** */
 #define RINGBUFFER_RINGBUFFER_TESTSIZE      (uint8_t)32
