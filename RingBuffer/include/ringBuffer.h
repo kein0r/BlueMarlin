@@ -44,8 +44,8 @@
 /* ******************| Type definitions |****************************** */
 
 /* Some function like macro to make code more readable */
-#define RingBuffer_incrementIndex(a)          a = (a + 1) % ringBufferSize
-#define RingBuffer_decrementIndex(a)          a = (a - 1) % ringBufferSize
+#define RingBuffer_incrementIndex(a)          a = ((a + 1) % ringBufferSize)
+#define RingBuffer_decrementIndex(a)          a = (((RingBuffer_BufferIndex_t)(a - 1)) % ringBufferSize)
 #define RingBuffer_ringBufferFull(x)          (x.lastOperation == RINGBUFFER_LASTOPERATION_WRITE && (x.head == x.tail))
 #define RingBuffer_ringBufferEmpty(x)         (x.lastOperation == RINGBUFFER_LASTOPERATION_READ && (x.head == x.tail))
 

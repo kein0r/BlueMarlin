@@ -141,7 +141,7 @@ template <class T, uint8_t ringBufferSize> uint8_t RingBuffer<T, ringBufferSize>
  * element, which is where tail is pointing to. The content of this element is returned.
  * The function must be called before the iterator is accessed and every time the iterator
  * needs to be initialized again.
- * @ret Element of ringbuffer to which the newly initialized iterator is pointing to or NULL
+ * @return Element of ringbuffer to which the newly initialized iterator is pointing to or NULL
  * if ringbuffer is empty.
  * @note While the iterator is in use access to the ringbuffer shall be avoided. Reading the
  * ringbuffer is less critical, however, write could cause unpredictable results.
@@ -160,10 +160,10 @@ template <class T, uint8_t ringBufferSize> T* RingBuffer<T, ringBufferSize>::sta
 }
 
 /**
- * Returns the next element in the ringbuffer relative to current position of #iterator.
+ * Sets (increases) the #iterator to next element, if available, and returns this element.
  * The element is not consumed from the buffer.
- * @ret Next element in the ringbuffer or NULL if there is no such element.
- * @pre #startIterator was called to initialize the iterator
+ * @return Next element in the ringbuffer or NULL if there is no such element.
+ * @pre #startIterator was called to initialize the iterator and return value was not NULL
  */
 template <class T, uint8_t ringBufferSize> T* RingBuffer<T, ringBufferSize>::nextElement()
 {
@@ -185,10 +185,10 @@ template <class T, uint8_t ringBufferSize> T* RingBuffer<T, ringBufferSize>::nex
 }
 
 /**
- * Return the previous element in the ringbuffer relative to current position of #iterator.
+ * Sets (decreases) the #iterator to the previous element and returns this element.
  * The element is not consumed from the buffer.
- * @ret Previous element in the ringubffer or NULL if there is no such element.
- * @pre #startIterator was called to initialize the iterator
+ * @return Previous element in the ringubffer or NULL if there is no such element.
+ * @pre #startIterator was called to initialize the iterator and return value was not NULL
  */
 template <class T, uint8_t ringBufferSize> T* RingBuffer<T, ringBufferSize>::previousElement()
 {
