@@ -276,12 +276,12 @@ static void RingBuffer_RingBuffer_startIterator_1(void)
 {
   char *elementPtr;
   /* Test if NULL is return in case buffer is empty */
-  elementPtr = charRingBuffer->startIterator();
+  elementPtr = charRingBuffer->startIterator(RINGBUFFER_ITERATOR_TAIL);
   TEST_ASSERT_NULL(elementPtr);
   /* Add one element to ringbuffer */
   char element = 0xaa;
   charRingBuffer->write(element);
-  elementPtr = charRingBuffer->startIterator();
+  elementPtr = charRingBuffer->startIterator(RINGBUFFER_ITERATOR_TAIL);
   TEST_ASSERT_NOT_NULL(elementPtr);
   TEST_ASSERT_EQUAL_INT(0xaa, (unsigned char)*elementPtr);
 }
@@ -298,7 +298,7 @@ static void RingBuffer_RingBuffer_startIterator_2(void)
     charRingBuffer->write(i);
   }
   char *elementPtr;
-  elementPtr = charRingBuffer->startIterator();
+  elementPtr = charRingBuffer->startIterator(RINGBUFFER_ITERATOR_TAIL);
   TEST_ASSERT_NOT_NULL(elementPtr);
   TEST_ASSERT_EQUAL_INT(0x0, (unsigned char)*elementPtr);
 }
@@ -319,7 +319,7 @@ static void RingBuffer_RingBuffer_nextElement_1(void)
     charRingBuffer->write(i);
   }
   char *elementPtr;
-  elementPtr = charRingBuffer->startIterator();
+  elementPtr = charRingBuffer->startIterator(RINGBUFFER_ITERATOR_TAIL);
   TEST_ASSERT_NOT_NULL(elementPtr);
   /* Check values returned by nextElement. Only need to request buffersize/2 - 1
    * because we are using "nextElement" and the first element is already returned
@@ -376,7 +376,7 @@ static void RingBuffer_RingBuffer_nextElement_2(void)
     charRingBuffer->write(i);
   }
   char *elementPtr;
-  elementPtr = charRingBuffer->startIterator();
+  elementPtr = charRingBuffer->startIterator(RINGBUFFER_ITERATOR_TAIL);
   TEST_ASSERT_NOT_NULL(elementPtr);
   /* Check values returned by nextElement. Only need to request buffersize/2 - 1
    * because we are using "nextElement" and the first element is already returned
@@ -408,7 +408,7 @@ static void RingBuffer_RingBuffer_nextElement_3(void)
     charRingBuffer->write(i);
   }
   char *elementPtr;
-  elementPtr = charRingBuffer->startIterator();
+  elementPtr = charRingBuffer->startIterator(RINGBUFFER_ITERATOR_TAIL);
   TEST_ASSERT_NOT_NULL(elementPtr);
   /* Check values returned by nextElement. Only need to request buffersize - 1
    * because we are using "nextElement" and the first element is already returned
@@ -439,7 +439,7 @@ static void RingBuffer_RingBuffer_previousElement_1(void)
   charRingBuffer->write(0xbb);
   /* Check if ringbuffer now contains two elements */
   TEST_ASSERT_EQUAL_INT(2, charRingBuffer->available());
-  TEST_ASSERT_NOT_NULL(charRingBuffer->startIterator());
+  TEST_ASSERT_NOT_NULL(charRingBuffer->startIterator(RINGBUFFER_ITERATOR_TAIL));
   TEST_ASSERT_NOT_NULL(charRingBuffer->nextElement());
   TEST_ASSERT_NULL(charRingBuffer->nextElement());
   /* Iterator should now be at the last valid element */
@@ -486,7 +486,7 @@ static void RingBuffer_RingBuffer_previousElement_2(void)
     charRingBuffer->write(i);
   }
   char *elementPtr;
-  elementPtr = charRingBuffer->startIterator();
+  elementPtr = charRingBuffer->startIterator(RINGBUFFER_ITERATOR_TAIL);
   /* Advance iterator to last valid element */
   for (int i=0; i<RINGBUFFER_RINGBUFFER_TESTSIZE - 1; i++)
   {

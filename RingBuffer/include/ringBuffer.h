@@ -41,6 +41,9 @@
 #define RINGBUFFER_LASTOPERATION_READ         FALSE
 #define RINGBUFFER_LASTOPERATION_WRITE        TRUE
 
+#define RINGBUFFER_ITERATOR_TAIL              (uint8_t)0
+#define RINGBUFFER_ITERATOR_HEAD              (uint8_t)1
+
 /* ******************| Type definitions |****************************** */
 
 /* Some function like macro to make code more readable */
@@ -89,7 +92,7 @@ public:
     uint8_t read(T *data);
     uint8_t available();
 
-    T* startIterator();
+    T* startIterator(RingBuffer_BufferIndex_t initialIteratorPlace);
     T* nextElement();
     T* previousElement();
 };

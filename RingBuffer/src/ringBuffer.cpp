@@ -141,19 +141,28 @@ template <class T, uint8_t ringBufferSize> uint8_t RingBuffer<T, ringBufferSize>
  * element, which is where tail is pointing to. The content of this element is returned.
  * The function must be called before the iterator is accessed and every time the iterator
  * needs to be initialized again.
+ * @param startPlace Initial value to place the iterator. Iterator can be placed at the first
+ * valid element RINGBUFFER_ITERATOR_TAIL or at the last valid element RINGBUFFER_ITERATOR_HEAD.
  * @return Element of ringbuffer to which the newly initialized iterator is pointing to or NULL
  * if ringbuffer is empty.
  * @note While the iterator is in use access to the ringbuffer shall be avoided. Reading the
  * ringbuffer is less critical, however, write could cause unpredictable results.
  */
-template <class T, uint8_t ringBufferSize> T* RingBuffer<T, ringBufferSize>::startIterator()
+template <class T, uint8_t ringBufferSize> T* RingBuffer<T, ringBufferSize>::startIterator(RingBuffer_BufferIndex_t initialIteratorPlace)
 {
   T *retVal = NULL;
 
   /* We can only iterate over the buffer if it's not empty */
   if (!RingBuffer_ringBufferEmpty(ringBuffer))
   {
-    iterator = ringBuffer.tail;
+    if (initialIteratorPlace == RINGBUFFER_ITERATOR_HEAD)
+    {
+      iterator = ringBuffer.head;
+    }
+    else
+    {
+    	iterator = ringBuffer.tail;
+    }
     retVal = &(ringBuffer.buffer[iterator]);
   }
   return retVal;
