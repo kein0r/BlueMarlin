@@ -62,6 +62,7 @@ template <class T, uint8_t ringBufferSize>RingBuffer<T, ringBufferSize>::RingBuf
     /* Initialize ring buffer */
     ringBuffer.head = 0;
     ringBuffer.tail = 0;
+    iterator = ringBufferSize;     /* Set iterator outside of the buffer to mark it invalid */
     ringBuffer.lastOperation = RINGBUFFER_LASTOPERATION_READ; /* Buffer is empty on start-up */
 }
 
@@ -135,5 +136,70 @@ template <class T, uint8_t ringBufferSize> uint8_t RingBuffer<T, ringBufferSize>
   return retVal;
 }
 
+/**
+ * Initializes the iterator for the rinbuffer. The Iterator is initialized to the first valid
+ * element, which is where tail is pointing to. The content of this element is returned.
+ * The function must be called before the iterator is accessed and every time the iterator
+ * needs to be initialized again.
+ * @ret Element of ringbuffer to which the newly initialized iterator is pointing to or NULL
+ * if ringbuffer is empty.
+ * @note While the iterator is in use access to the ringbuffer shall be avoided. Reading the
+ * ringbuffer is less critical, however, write could cause unpredictable results.
+ */
+template <class T, uint8_t ringBufferSize> T* RingBuffer<T, ringBufferSize>::startIterator()
+{
+  T *retVal = NULL;
+
+  /* We can only iterate over the buffer if it's not empty */
+  if (!RingBuffer_ringBufferEmpty(ringBuffer))
+  {
+    iterator = ringBuffer.tail;
+    retVal = &(ringBuffer.buffer[iterator]);
+  }
+  return retVal;
+}
+
+/**
+ * Returns the next element in the ringbuffer relative to current position of #iterator.
+ * The element is not consumed from the buffer.
+ * @ret Next element in the ringbuffer or NULL if there is no such element.
+ * @pre #startIterator was called to initialize the iterator
+ */
+template <class T, uint8_t ringBufferSize> T* RingBuffer<T, ringBufferSize>::nextElement()
+{
+  T *retVal = NULL;
+  RingBuffer_BufferIndex_t tempIterator = iterator;
+
+  /* Firstly only increment a copy of the real iterator to check if
+   * it is not increased beyond head.
+   */
+  RingBuffer_incrementIndex(tempIterator);
+
+  /* Only increment if we are not yet at head */
+  if (tempIterator != ringBuffer.head)
+  {
+    retVal = &(ringBuffer.buffer[iterator]);
+    iterator = tempIterator;
+  }
+  return retVal;
+}
+
+/**
+ * Return the previous element in the ringbuffer relative to current position of #iterator.
+ * The element is not consumed from the buffer.
+ * @ret Previous element in the ringubffer or NULL if there is no such element.
+ * @pre #startIterator was called to initialize the iterator
+ */
+template <class T, uint8_t ringBufferSize> T* RingBuffer<T, ringBufferSize>::previousElement()
+{
+  T *retVal = NULL;
+  /* Only decrement if we are not yet at tail */
+  if (iterator != ringBuffer.tail)
+  {
+    RingBuffer_decrementIndex(iterator);
+    retVal = &(ringBuffer.buffer[iterator]);
+  }
+  return retVal;
+}
 /** @} doxygen end group definition */
 /* ******************| End of file |*********************************** */

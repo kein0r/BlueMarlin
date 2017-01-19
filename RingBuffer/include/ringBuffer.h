@@ -45,6 +45,7 @@
 
 /* Some function like macro to make code more readable */
 #define RingBuffer_incrementIndex(a)          a = (a + 1) % ringBufferSize
+#define RingBuffer_decrementIndex(a)          a = (a - 1) % ringBufferSize
 #define RingBuffer_ringBufferFull(x)          (x.lastOperation == RINGBUFFER_LASTOPERATION_WRITE && (x.head == x.tail))
 #define RingBuffer_ringBufferEmpty(x)         (x.lastOperation == RINGBUFFER_LASTOPERATION_READ && (x.head == x.tail))
 
@@ -80,13 +81,17 @@ template <class T, uint8_t ringBufferSize> class RingBuffer
 
 private:
     RingBuffer_RingBuffer_t ringBuffer;
-
+    RingBuffer_BufferIndex_t iterator;             /*!< Iterator used to iterate over the buffer without consuming elements */
   
 public:
     RingBuffer();
     uint8_t write(T data);
     uint8_t read(T *data);
     uint8_t available();
+
+    T* startIterator();
+    T* nextElement();
+    T* previousElement();
 };
 
 /* ******************| External function declarations |**************** */

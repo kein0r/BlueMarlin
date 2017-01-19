@@ -268,6 +268,156 @@ static void RingBuffer_RingBuffer_WriteStruct_2(void)
 }
 
 /**
+ * Basic tests return valued of startIterator
+ * Test if startIterator returns NULL in case buffer is empty
+ * Enter one element and test if this element is returned
+ */
+static void RingBuffer_RingBuffer_startIterator_1(void)
+{
+  char *elementPtr;
+  /* Test if NULL is return in case buffer is empty */
+  elementPtr = charRingBuffer->startIterator();
+  TEST_ASSERT_NULL(elementPtr);
+  /* Add one element to ringbuffer */
+  char element = 0xaa;
+  charRingBuffer->write(element);
+  elementPtr = charRingBuffer->startIterator();
+  TEST_ASSERT_NOT_NULL(elementPtr);
+  TEST_ASSERT_EQUAL_INT(0xaa, (unsigned char)*elementPtr);
+}
+
+/**
+ * Basic tests return valued of startIterator
+ * Fill buffer completely and see if still first element is returned
+ * correctly.
+ */
+static void RingBuffer_RingBuffer_startIterator_2(void)
+{
+  for (int i=0; i<RINGBUFFER_RINGBUFFER_TESTSIZE; i++)
+  {
+    charRingBuffer->write(i);
+  }
+  char *elementPtr;
+  elementPtr = charRingBuffer->startIterator();
+  TEST_ASSERT_NOT_NULL(elementPtr);
+  TEST_ASSERT_EQUAL_INT(0x0, (unsigned char)*elementPtr);
+}
+
+/**
+ * Basic tests for nextElement
+ * The behavior for nexElement without valid startIterator is not
+ * specified and does not need to be tested
+ * Fill ringbuffer 50%, get and iterator and iterator over complete
+ * buffer. Test if the values are correct and if at the end NULL is
+ * returned.
+ */
+static void RingBuffer_RingBuffer_nextElement_1(void)
+{
+  /* Fill 50% of the ringbuffer with data */
+  for (int i=0; i<RINGBUFFER_RINGBUFFER_TESTSIZE/2; i++)
+  {
+    charRingBuffer->write(i);
+  }
+  char *elementPtr;
+  elementPtr = charRingBuffer->startIterator();
+  TEST_ASSERT_NOT_NULL(elementPtr);
+  /* Check values returned by nextElement. Only need to request buffersize/2 - 1
+   * because we are using "nextElement" and the first element is already returned
+   * by startIterator */
+  for (int i=0; i<RINGBUFFER_RINGBUFFER_TESTSIZE/2 - 1; i++)
+  {
+	  elementPtr = charRingBuffer->nextElement();
+	  TEST_ASSERT_NOT_NULL(elementPtr);
+	  TEST_ASSERT_EQUAL_INT(i, (unsigned char)*elementPtr);
+  }
+  /* Check if additional calls to nextElement will return NULL */
+  elementPtr = charRingBuffer->nextElement();
+  TEST_ASSERT_NULL(elementPtr);
+}
+
+/**
+ * Basic tests for nextElement
+ * The behavior for nexElement without valid startIterator is not
+ * specified and does not need to be tested
+ * The test is pretty much the same as the nextElement_1 test, just
+ * that there are a few elements added and consumed before the test
+ * starts.
+ * Fill ringbuffer 50%, get and iterator and iterator over complete
+ * buffer. Test if the values are correct and if at the end NULL is
+ * returned.
+ */
+static void RingBuffer_RingBuffer_nextElement_2(void)
+{
+  /* Insert and consume three elements to shift the head and tail a
+   * bit. Thus, making it non-default value.
+   */
+  char element = 0xaa;
+  /* Insert on random element in empty ringbuffer */
+  charRingBuffer->write(element);
+  charRingBuffer->write(element);
+  charRingBuffer->write(element);
+  /* Check if ringbuffer now contains the elements */
+  TEST_ASSERT_EQUAL_INT(3, charRingBuffer->available());
+  /* Remove the elements again */
+  TEST_ASSERT_EQUAL_INT(RESULT_OK, charRingBuffer->read(&element));
+  TEST_ASSERT_EQUAL_INT(RESULT_OK, charRingBuffer->read(&element));
+  TEST_ASSERT_EQUAL_INT(RESULT_OK, charRingBuffer->read(&element));
+
+  /* Fill 50% of the ringbuffer with data */
+  for (int i=0; i<RINGBUFFER_RINGBUFFER_TESTSIZE/2; i++)
+  {
+    charRingBuffer->write(i);
+  }
+  char *elementPtr;
+  elementPtr = charRingBuffer->startIterator();
+  TEST_ASSERT_NOT_NULL(elementPtr);
+  /* Check values returned by nextElement. Only need to request buffersize/2 - 1
+   * because we are using "nextElement" and the first element is already returned
+   * by startIterator */
+  for (int i=0; i<RINGBUFFER_RINGBUFFER_TESTSIZE/2 - 1; i++)
+  {
+	  elementPtr = charRingBuffer->nextElement();
+	  TEST_ASSERT_NOT_NULL(elementPtr);
+	  TEST_ASSERT_EQUAL_INT(i, (unsigned char)*elementPtr);
+  }
+  /* Check if additional calls to nextElement will return NULL */
+  elementPtr = charRingBuffer->nextElement();
+  TEST_ASSERT_NULL(elementPtr);
+}
+
+/**
+ * Basic tests for nextElement with full buffer
+ * The behavior for nexElement without valid startIterator is not
+ * specified and does not need to be tested
+ * Fill ringbuffer 100%, get and iterator and iterator over complete
+ * buffer. Test if the values are correct and if at the end NULL is
+ * returned.
+ */
+static void RingBuffer_RingBuffer_nextElement_3(void)
+{
+  /* Fill ringbuffer completely with data */
+  for (int i=0; i<RINGBUFFER_RINGBUFFER_TESTSIZE; i++)
+  {
+    charRingBuffer->write(i);
+  }
+  char *elementPtr;
+  elementPtr = charRingBuffer->startIterator();
+  TEST_ASSERT_NOT_NULL(elementPtr);
+  /* Check values returned by nextElement. Only need to request buffersize - 1
+   * because we are using "nextElement" and the first element is already returned
+   * by startIterator */
+  for (int i=0; i<RINGBUFFER_RINGBUFFER_TESTSIZE - 1; i++)
+  {
+	  elementPtr = charRingBuffer->nextElement();
+	  TEST_ASSERT_NOT_NULL(elementPtr);
+	  TEST_ASSERT_EQUAL_INT(i, (unsigned char)*elementPtr);
+  }
+  /* Check if additional calls to nextElement will return NULL */
+  elementPtr = charRingBuffer->nextElement();
+  TEST_ASSERT_NULL(elementPtr);
+}
+
+/**
  * Test Setup function which is called before all each test case
  */
 static void setUpCharRingBuffer(void)
@@ -325,6 +475,19 @@ TestRef StructRingBuffer_test_RunTests(void)
   return (TestRef)&CharRingBuffer_tests;
 }
 
+TestRef RingBufferIterator_test_RunTests(void)
+{
+  EMB_UNIT_TESTFIXTURES(fixtures) {
+    new_TestFixture("Test case RingBuffer_RingBuffer_startIterator_1", RingBuffer_RingBuffer_startIterator_1),
+    new_TestFixture("Test case RingBuffer_RingBuffer_startIterator_2", RingBuffer_RingBuffer_startIterator_2),
+	new_TestFixture("Test case RingBuffer_RingBuffer_nextElement_1", RingBuffer_RingBuffer_nextElement_1),
+	new_TestFixture("Test case RingBuffer_RingBuffer_nextElement_2", RingBuffer_RingBuffer_nextElement_2),
+	new_TestFixture("Test case RingBuffer_RingBuffer_nextElement_3", RingBuffer_RingBuffer_nextElement_3)
+  };
+  EMB_UNIT_TESTCALLER(CharRingBuffer_tests,"GCodeRingBuffer Unit test",setUpCharRingBuffer,tearDownCharRingBuffer,fixtures);
+  return (TestRef)&CharRingBuffer_tests;
+}
+
 /**
  *
  */
@@ -333,6 +496,7 @@ int main(void)
   TestRunner_start();
   TestRunner_runTest(CharRingBuffer_test_RunTests());
   TestRunner_runTest(StructRingBuffer_test_RunTests());
+  TestRunner_runTest(RingBufferIterator_test_RunTests());
   TestRunner_end();
 }
 
