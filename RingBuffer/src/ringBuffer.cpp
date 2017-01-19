@@ -157,11 +157,15 @@ template <class T, uint8_t ringBufferSize> T* RingBuffer<T, ringBufferSize>::sta
   {
     if (initialIteratorPlace == RINGBUFFER_ITERATOR_HEAD)
     {
+      /* Because head points to the next element to be written, thus, to a
+       * right now still empty space, iterator must be decreased once to point
+       * to a valid location */
       iterator = ringBuffer.head;
+      RingBuffer_decrementIndex(iterator);
     }
     else
     {
-    	iterator = ringBuffer.tail;
+      iterator = ringBuffer.tail;
     }
     retVal = &(ringBuffer.buffer[iterator]);
   }

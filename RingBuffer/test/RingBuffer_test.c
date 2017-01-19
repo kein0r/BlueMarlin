@@ -270,7 +270,8 @@ static void RingBuffer_RingBuffer_WriteStruct_2(void)
 /**
  * Basic tests return valued of startIterator
  * Test if startIterator returns NULL in case buffer is empty
- * Enter one element and test if this element is returned
+ * Enter one element and test if this element is returned. All test are
+ * done with startInterator initialized with TAIL and HEAD
  */
 static void RingBuffer_RingBuffer_startIterator_1(void)
 {
@@ -278,18 +279,24 @@ static void RingBuffer_RingBuffer_startIterator_1(void)
   /* Test if NULL is return in case buffer is empty */
   elementPtr = charRingBuffer->startIterator(RINGBUFFER_ITERATOR_TAIL);
   TEST_ASSERT_NULL(elementPtr);
+  elementPtr = charRingBuffer->startIterator(RINGBUFFER_ITERATOR_HEAD);
+    TEST_ASSERT_NULL(elementPtr);
   /* Add one element to ringbuffer */
   char element = 0xaa;
   charRingBuffer->write(element);
   elementPtr = charRingBuffer->startIterator(RINGBUFFER_ITERATOR_TAIL);
   TEST_ASSERT_NOT_NULL(elementPtr);
   TEST_ASSERT_EQUAL_INT(0xaa, (unsigned char)*elementPtr);
+  elementPtr = charRingBuffer->startIterator(RINGBUFFER_ITERATOR_HEAD);
+  TEST_ASSERT_NOT_NULL(elementPtr);
+  TEST_ASSERT_EQUAL_INT(0xaa, (unsigned char)*elementPtr);
 }
 
 /**
- * Basic tests return valued of startIterator
- * Fill buffer completely and see if still first element is returned
- * correctly.
+ * Basic tests return value of startIterator
+ * Fill buffer completely and test if still first element is returned
+ * correctly if iterator is started at tail
+ * Test if the same element is return if iterator is started at head
  */
 static void RingBuffer_RingBuffer_startIterator_2(void)
 {
@@ -301,6 +308,9 @@ static void RingBuffer_RingBuffer_startIterator_2(void)
   elementPtr = charRingBuffer->startIterator(RINGBUFFER_ITERATOR_TAIL);
   TEST_ASSERT_NOT_NULL(elementPtr);
   TEST_ASSERT_EQUAL_INT(0x0, (unsigned char)*elementPtr);
+  elementPtr = charRingBuffer->startIterator(RINGBUFFER_ITERATOR_HEAD);
+  TEST_ASSERT_NOT_NULL(elementPtr);
+  TEST_ASSERT_EQUAL_INT(RINGBUFFER_RINGBUFFER_TESTSIZE-1, (unsigned char)*elementPtr);
 }
 
 /**
@@ -308,8 +318,8 @@ static void RingBuffer_RingBuffer_startIterator_2(void)
  * The behavior for nexElement without valid startIterator is not
  * specified and does not need to be tested
  * Fill ringbuffer 50%, get and iterator and iterator over complete
- * buffer. Test if the values are correct and if at the end NULL is
- * returned.
+ * buffer from tail to head. Test if the values are correct and if
+ * at the end NULL is returned.
  */
 static void RingBuffer_RingBuffer_nextElement_1(void)
 {
@@ -486,13 +496,7 @@ static void RingBuffer_RingBuffer_previousElement_2(void)
     charRingBuffer->write(i);
   }
   char *elementPtr;
-  elementPtr = charRingBuffer->startIterator(RINGBUFFER_ITERATOR_TAIL);
-  /* Advance iterator to last valid element */
-  for (int i=0; i<RINGBUFFER_RINGBUFFER_TESTSIZE - 1; i++)
-  {
-    elementPtr = charRingBuffer->nextElement();
-  }
-  /* Check if additional calls to nextElement will return NULL */
+  elementPtr = charRingBuffer->startIterator(RINGBUFFER_ITERATOR_HEAD);
   TEST_ASSERT_NULL(charRingBuffer->nextElement());
   /* Now test if we can go all the way back to the first element */
   for (int i=RINGBUFFER_RINGBUFFER_TESTSIZE/2 - 1; i>0; i--)
