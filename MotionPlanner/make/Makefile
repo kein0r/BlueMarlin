@@ -10,7 +10,7 @@
 #
 # Add this module to the list of modules. Make sure that the module name matches
 # the directory name of the module.
-MODULE_NAME := Planner
+MODULE_NAME := MotionPlanner
 
 #
 # Generic defines which are usually not changed
