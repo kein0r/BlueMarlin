@@ -19,11 +19,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#if (!defined TEMPLATE_INCLUDE_TEMPLATE_H_)
+#if (!defined MOTIONPLANNER_INCLUDE_MOTIONPLANNER_H_)
 /* Preprocessor exclusion definition */
-#define TEMPLATE_INCLUDE_TEMPLATE_H_
+#define MOTIONPLANNER_INCLUDE_MOTIONPLANNER_H_
 /**
- * \brief Template include file
+ * \brief MotionPlanner include file
  *
  * Include files should start with a lowercase character and use cammelCase
  * notation.
@@ -34,7 +34,7 @@
  */
 
 
-/** \addtogroup Template
+/** \addtogroup MotionPlanner
  * @{
  */
 
@@ -43,6 +43,10 @@
 /* ******************| Macros |**************************************** */
 
 /* ******************| Type definitions |****************************** */
+class MotionPlanner
+{
+
+};
 
 /* ******************| External function declarations |**************** */
 
@@ -51,5 +55,5 @@
 /* ******************| External variables |**************************** */
 
 /** @} doxygen end group definition */
-#endif /* if !defined( TEMPLATE_INCLUDE_TEMPLATE_H_ ) */
+#endif /* if !defined( MOTIONPLANNER_INCLUDE_MOTIONPLANNER_H_ ) */
 /* ******************| End of file |*********************************** */

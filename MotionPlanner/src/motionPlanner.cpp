@@ -20,31 +20,29 @@
  *
  */
 /**
- * \brief Template source file
+ * \brief MotionPlanner source file
  *
  * File names should start with lowercase character and use cammelCase 
  * notation.
  *
  * \project BlueMarlin
- * \author <FULL NAME>
+ * \author kein0r
  *
  */
 
 
-/** \addtogroup Template
+/** \addtogroup MotionPlanner
  * @{
  */
 
 /* ******************| Inclusions |************************************ */
-#include "template.h"
+#include "MotionPlanner.h"
 
 /* ******************| Macros |**************************************** */
 
 /* ******************| Type Definitions |****************************** */
 
 /* ******************| Function Prototypes |*************************** */
-int Template_templateFunction(int i, int *s);
-
 
 /* ******************| Global Variables |****************************** */
 
