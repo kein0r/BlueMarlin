@@ -42,6 +42,17 @@
 
 /* ******************| Macros |**************************************** */
 
+/**
+ * Macros used to define values should always define default values. Numbers
+ * shall always have a type
+ * It's possible to override default in the respective configuration file
+ * or by specifying the value during compile time with
+ * -DTEMPLATE_TEMPLATE_THING 4
+ */
+#ifndef TEMPLATE_TEMPLATE_THING
+#define TEMPLATE_TEMPLATE_THING         (uint8_t)5
+#endif
+
 /* ******************| Type definitions |****************************** */
 
 /* ******************| External function declarations |**************** */
