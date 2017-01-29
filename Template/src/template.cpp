@@ -22,8 +22,8 @@
 /**
  * \brief Template source file
  *
- * File names should start with lowercase character and use cammelCase 
- * notation.
+ * GNU coding standard (https://www.gnu.org/prep/standards/) shall be
+ * followed beside the snake_case_thing. Please use camelCase instead.
  *
  * \project BlueMarlin
  * \author <FULL NAME>
