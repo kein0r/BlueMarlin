@@ -23,8 +23,6 @@
 /* Preprocessor exclusion definition */
 #define TEMPLATE_INCLUDE_TEMPLATE_H_
 /**
- * \file Template.h
- *
  * \brief Template include file
  *
  * Include files should start with a lowercase character and use cammelCase
@@ -41,11 +39,94 @@
  */
 
 /* ******************| Inclusions |************************************ */
+#include<platform.h>
 
 /* ******************| Macros |**************************************** */
+/**
+ * Function like macros to set direction bits of stepper motors
+ * @TODO Move to stepper module
+ */
+#define STEPPER_DIRECTION_POSITIVE    (uint8_t)0
+#define STEPPER_DIRECTION_NEGATIVE    (uint8_t)1
+#define Stepper_setStepDirectionPositive(directionBitVector, stepper)  (directionBitVector |= _BV(stepper))
+#define Stepper_setStepDirectionNegative(directionBitVector, stepper)  (directionBitVector |= _BV(stepper))
+
+/**
+ * Number of (linear independent) axis for this machine. The number
+ * defines the world and axis coordinate system for the machine at hand.
+ * Therefore this number shall not be higher than three.
+ * Default number of axis is set to three. It's possible to override
+ * default in the respective configuration file or by specifying the
+ * value during compile time with -MACHINE_NUM_AXIS 3
+ * @TODO Move to machine/kinematic module
+ */
+#ifndef MACHINE_NUM_AXIS
+#define MACHINE_NUM_AXIS              (uint8_t)3
+#endif
+
+/**
+ * Number of extruder for the machine at hand. Default number of extruder
+ * is set to one.
+ * It's possible to override default in the respective configuration file
+ * or by specifying the value during compile time with
+ * -DMACHINE_NUM_EXTRUDER 3
+ * @TODO Move to machine/kinematic module
+ */
+#ifndef MACHINE_NUM_EXTRUDER
+#define MACHINE_NUM_EXTRUDER          (uint8_t)1
+#endif
 
 /* ******************| Type definitions |****************************** */
 
+/* TODO: To be moved to machine/Kinematik module */
+typedef float WorldCoordinate_t;
+typedef struct {
+        WorldCoordinate_t x;
+        WorldCoordinate_t y;
+        WorldCoordinate_t z;
+        WorldCoordinate_t e;
+} WorldCoordinates_t;
+
+/**
+ * Axis coordinate in steps
+ */
+typedef int32_t AxisCoordinate_t;
+/**
+ * Axis coordinates in steps calculated from world coordinates using
+ * machine's inverse kinematic function including any mechanical related
+ * things like
+ * - steps per rotation (FULL_STEPS_PER_ROTATION)
+ * - micro-steps (MICROSTEPS)
+ * - pulley-teeth (PULLEY_TEETH)
+ * - belt pitch (BELT_PITCH)
+ * - gear-box ratio
+ * For Cartesian machines inverse kinematic will only consist of above
+ * values for delta and other machine more complicated inverse kinematic
+ * need to be applied first.
+ */
+typedef struct {
+        AxisCoordinate_t axis[MACHINE_NUM_AXIS];            /*!< Coordinates for all axis in steps */
+        AxisCoordinate_t extruder[MACHINE_NUM_EXTRUDER];    /*!< Extruder coordinates for all available extruder in steps */
+} AxisCoordinates_t;
+
+/*
+ * Feedrate, that is speed, in axis coordinates in steps per second.
+ * This value is always positive.
+ */
+typedef uint32_t AxisFeedrate_t;
+
+
+/**
+ * Steps for stepper driver. Steps are always absolute steps plus direction
+ * bits. If there is more than one stepper connected to one axis this shall
+ * be handled in the respective Stepper module.
+ */
+typedef uint32_t StepperCoordinate_t;
+typedef struct {
+        StepperCoordinate_t steps[MACHINE_NUM_AXIS];          /*!< Absolute number of steps for each axis stepper */
+        StepperCoordinate_t extruder[MACHINE_NUM_EXTRUDER];   /*!< Absolute number of steps for each extruder stepper */
+        uint8_t directionBits;                                /*!< Direction bit-field for each stepper. Bits are used in the same order as axis are defined. */
+} StepperCoordinates_t;
 /* ******************| External function declarations |**************** */
 extern void setup(void);
 extern void loop(void);
