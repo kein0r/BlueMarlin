@@ -29,7 +29,7 @@
  * notation.
  *
  * \project BlueMarlin
- * \author <FULL NAME>
+ * \author kein0r
  *
  */
 
@@ -39,12 +39,52 @@
  */
 
 /* ******************| Inclusions |************************************ */
+#include<BlueMarlin.h>
+#include<RingBuffer.h>
 
 /* ******************| Macros |**************************************** */
+/**
+ * Default number of entries in #Motionplanner ringbuffer #motionbuffer.
+ * Its possible to override default in the respective configuration file
+ * or by specifying the value during compile time with
+ * -DMOTIONPLANNER_MOTIONBUFFER_SIZE 32
+ */
+#ifndef MOTIONPLANNER_MOTIONBUFFER_SIZE
+#define MOTIONPLANNER_MOTIONBUFFER_SIZE        (uint8_t)32
+#endif
+
+/**
+ * Minimum number of steps for one movement. Everything with less than
+ * this number of steps will be ignored as move and must be joined with
+ * the next movement by the next upper layer.
+ * It's possible to override default in the respective configuration file
+ * or by specifying the value during compile time with
+ * -DMOTIONPLANNER_MINIMUM_SEGMENT_SIZE 5
+ */
+#ifndef MOTIONPLANNER_MINIMUM_SEGMENT_SIZE
+#define MOTIONPLANNER_MINIMUM_SEGMENT_SIZE     (StepperCoordinate_t)5
+#endif
 
 /* ******************| Type definitions |****************************** */
+/**
+ * All information needed for one move.
+ * @note activeExtruder was moved to machine/kinematic module. This way
+ * retract one extruder while at the same time extrude with another one
+ * is possible.
+ */
+typedef struct
+{
+  StepperCoordinates_t steps;           /*!< Number of absolute steps for this move along each axis */
+  StepperCoordinate_t stepEventCount;   /*!< Maximum number of step events required to complete this block */
+} MotionBlock_t;
+
 class MotionPlanner
 {
+private:
+  RingBuffer<MotionBlock_t, MOTIONPLANNER_MOTIONBUFFER_SIZE> motionBuffer;
+
+public:
+  bool addLineMovement(AxisCoordinates_t deltaMove, AxisFeedrate_t feedrate);
 
 };
 
