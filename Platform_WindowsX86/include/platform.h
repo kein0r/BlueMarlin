@@ -47,6 +47,18 @@
 #define RESULT_OK       (uint8_t)1
 #define RESULT_NOT_OK   (uint8_t)0
 
+/**
+ * Macros from Arduino.h
+ */
+#define min(a,b) ((a)<(b)?(a):(b))
+#define max(a,b) ((a)>(b)?(a):(b))
+#define abs(x) ((x)>0?(x):-(x))
+
+/**
+ * Macros from Arduino sfr_defs.h
+ */
+#define _BV(bit) (1 << (bit))
+
 /* ******************| Type definitions |****************************** */
 
 /**
@@ -69,7 +81,7 @@ typedef unsigned   uint32_t;
  * Platform module shall specify bool datatype and TRUE/FALSE.
  * @note Not sure how this works in conjunction with the cpp bool definition.
  */
- #ifndef __cplusplus
+#ifndef __cplusplus
 typedef unsigned char bool;
 #endif
 #undef FALSE
