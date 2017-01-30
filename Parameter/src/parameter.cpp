@@ -20,50 +20,32 @@
  *
  */
 /**
- * \brief Template source file
  *
  * GNU coding standard (https://www.gnu.org/prep/standards/) shall be
  * followed beside the snake_case_thing. Please use camelCase instead.
  *
  * \project BlueMarlin
- * \author <FULL NAME>
+ * \author kein0r
  *
  */
 
-
-/** \addtogroup Template
+/** \addtogroup Parameter
  * @{
  */
 
 /* ******************| Inclusions |************************************ */
-#include "template.h"
+#include "parameter.h"
 
 /* ******************| Macros |**************************************** */
 
 /* ******************| Type Definitions |****************************** */
 
 /* ******************| Function Prototypes |*************************** */
-int Template_templateFunction(int i, int *s);
-
 
 /* ******************| Global Variables |****************************** */
+Parameter_t parameter;
 
 /* ******************| Function Implementation |*********************** */
-/**
- * \brief Template function
- * Document your function here. Function names shall start with module names
- * followed by an underscore followed by the function name starting with a 
- * lowercase letter using cammelCase notion.
- * Dont' forget to also describe the parameters of your function including
- * their direction. Also describe the return values, if any.
- * @param[in]  		i	Example input parameter
- * @param[in/out]	i	Example input/output parameter
- * @return			This function returns result X
-*/
-int Template_templateFunction(int i, int *s)
-{
-	return i;
-}
 
 /** @} doxygen end group definition */
 /* ******************| End of file |*********************************** */
