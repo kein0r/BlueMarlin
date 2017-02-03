@@ -1,5 +1,6 @@
 # Template Module 
 Template to be used for all modules within this project
+
 1.  Decide for a name for the new module. Module names should start with uppercase and use CamelCase notation (Example: NewModule)
 2.  Create a copy of the template directory. The new name must exactly match your module name (Example: cp -R Template NewModule)
 3.  Add the new directory to the template without any changes to give git the chance to recognize it as copy of Template module
