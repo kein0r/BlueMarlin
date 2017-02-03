@@ -20,19 +20,17 @@
  *
  */
 /**
- * \brief Template source file
  *
- * GNU coding standard (https://www.gnu.org/prep/standards/) shall be
- * followed beside the snake_case_thing. Please use camelCase instead.
+ * \addtogroup Template
+ * @{
+ *
+ * \brief Template source file
  *
  * \project BlueMarlin
  * \author <FULL NAME>
  *
- */
-
-
-/** \addtogroup Template
- * @{
+ * GNU coding standard (https://www.gnu.org/prep/standards/) shall be
+ * followed beside the snake_case_thing. Please use camelCase instead.
  */
 
 /* ******************| Inclusions |************************************ */
