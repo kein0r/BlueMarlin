@@ -105,8 +105,8 @@ typedef int32_t AxisCoordinate_t;
  * need to be applied first.
  */
 typedef struct {
-        AxisCoordinate_t axis[MACHINE_NUM_AXIS];            /*!< Coordinates for all axis in steps */
-        AxisCoordinate_t extruder[MACHINE_NUM_EXTRUDER];    /*!< Extruder coordinates for all available extruder in steps */
+        AxisCoordinate_t axis[MACHINE_NUM_AXIS];            /*!< Values for all axis in steps. Thus, steps, steps/second, steps/second^2, ... */
+        AxisCoordinate_t extruder[MACHINE_NUM_EXTRUDER];    /*!< Values for all available extruder in steps. Thus, steps, steps/second, steps/second^2, .. */
 } AxisCoordinates_t;
 
 /*

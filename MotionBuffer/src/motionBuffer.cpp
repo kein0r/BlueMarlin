@@ -19,48 +19,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#if (!defined TEMPLATE_INCLUDE_TEMPLATE_H_)
-/* Preprocessor exclusion definition */
-#define TEMPLATE_INCLUDE_TEMPLATE_H_
 /**
- * \brief Template include file
- *
- * Include files should start with a lowercase character and use cammelCase
- * notation.
+ * \addtogroup MotionBuffer
+ * @{
  *
  * \project BlueMarlin
- * \author <FULL NAME>
+ * \author Kein0r
  *
- */
-
-
-/** \addtogroup Template
- * @{
+ * GNU coding standard (https://www.gnu.org/prep/standards/) shall be
+ * followed beside the snake_case_thing. Please use camelCase instead.
+ *
+ *
  */
 
 /* ******************| Inclusions |************************************ */
+#include "motionBuffer.h"
 
 /* ******************| Macros |**************************************** */
 
-/**
- * Macros used to define values should always define default values. Numbers
- * shall always have a type
- * It's possible to override default in the respective configuration file
- * or by specifying the value during compile time with
- * -DTEMPLATE_TEMPLATE_THING 4
- */
-#ifndef TEMPLATE_TEMPLATE_THING
-#define TEMPLATE_TEMPLATE_THING         (uint8_t)5
-#endif
+/* ******************| Type Definitions |****************************** */
 
-/* ******************| Type definitions |****************************** */
+/* ******************| Function Prototypes |*************************** */
 
-/* ******************| External function declarations |**************** */
+/* ******************| Global Variables |****************************** */
+RingBuffer<MotionBlock_t, MOTIONBUFFER_MOTIONBUFFER_SIZE> motionBuffer;
 
-/* ******************| External constants |**************************** */
-
-/* ******************| External variables |**************************** */
+/* ******************| Function Implementation |*********************** */
 
 /** @} doxygen end group definition */
-#endif /* if !defined( TEMPLATE_INCLUDE_TEMPLATE_H_ ) */
 /* ******************| End of file |*********************************** */

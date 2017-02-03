@@ -20,13 +20,48 @@
  *
  */
 /**
- * \brief MotionPlanner source file
+ * /** \addtogroup MotionPlanner
+ * @{
  *
- * File names should start with lowercase character and use cammelCase 
- * notation.
+ * \brief MotionPlanner source file
  *
  * \project BlueMarlin
  * \author kein0r
+ *
+ * Motion Planing
+ *
+ * Motion planing shall be independent of any machine kinematics. It shall only
+ * act on the steps needed for the move at hand. For jerk control, however, the
+ * speed of movement in world coordinates is needed too and shall be taken into
+ * account for motion planing. Speed needs to be provided in world coordinates
+ * because some kinematics to not possess a linear relation between world and axis
+ * coordinate system.
+ * Input shall therefore be DeltaSteps in AxisCoordinate_t [steps], speed in
+ * WorldCoordinates_t [mm] and feedRate [steps/sec]
+ *
+ * The algorithm shall ensure that speed changes, that is jerk [mm/s] or junction
+ * speed, between two moves shall not be greater than allowed maximum jerk [mm/s]
+ * for the machine.
+ * For simplicity (Efficient Jerk Control) it will be assumed that each new move
+ * will be in the opposite direction (worst-case) and therefore the overall speed
+ * change between to moves shall always be below maximum allowed jerk. This
+ * implementation is more efficient regarding CPU time, however, less efficient
+ * regarding printing time.
+ * Future implementation (Advanced Jerk Control) can consider change of speed
+ * vector to calculate the real jerk between two moves reducing slow-down between
+ * to moves to a minimum.
+ * Acceleration from junction speed to requested speed, that is feedrate, shall
+ * not be higher than maximum allowed acceleration for the machine. If feedrate
+ * can't be reached for this move, a lower speed shall be used instead that ensures
+ * acceleration and de-acceleration from and to junction speed which obeys machine
+ * maximum values for acceleration and jerk.
+ *
+ * Efficient Jerk Control
+ *
+ * Last mode: speed of last move s-1, speed of actual move s
+ * s-1 > max_jerk/2, s > max_jerk/2 -> junction speed: max_jerk/2
+ * s-1 > max_jerk/2, s < max_jerk/2 -> junction speed: max_jerk-s
+ * s-1 < max_jerk/2, s < max_jerk/2 -> junction speed: min(s-1, s)
  *
  * Reasoning behind the mathematics in this module (in the key of 'Mathematica'):
  *
@@ -55,11 +90,6 @@
  *
  */
 
-
-/** \addtogroup MotionPlanner
- * @{
- */
-
 /* ******************| Inclusions |************************************ */
 #include "MotionPlanner.h"
 #include <platform.h>
@@ -83,7 +113,13 @@
  * like X_AXIS shall not be used but instead #MACHINE_NUM_AXIS and
  * #MACHINE_NUM_EXTRUDER used instead.
  * This function is blocking if the buffer can't hold the new motion. If
- * the ringbuffer is full the function will wait until space is available
+ * the ringbuffer is full the function will wait until space is available.
+ *
+ * This function is split into the following parts
+ * 1. Calculate steps for each stepper for axis and extruder
+ * 2. Calculate and limit speed acceleration for this move
+ * 3. Calculate and limit acceleration for this move
+ * 4. Calculate and limit jerk, that is speed changes between to consecutive blocks, for this move
  * @param[in] deltaMove Incremental move in axis coordinates
  * X_A.
  * @param[in] feedrate Feedrate, that is speed, for this move in steps per
@@ -92,7 +128,7 @@
  * if movement was to small to be added.
  * @note Replaces function plan_buffer_line
  */
-bool MotionPlanner::addMovement(AxisCoordinates_t deltaMove, AxisFeedrate_t feedrate)
+bool MotionPlanner::addLineMovement(AxisCoordinates_t deltaMove, WorldCoordinates_t speed, AxisFeedrate_t feedrate)
 {
   bool retVal = FALSE;
   MotionBlock_t motion;
@@ -103,6 +139,7 @@ bool MotionPlanner::addMovement(AxisCoordinates_t deltaMove, AxisFeedrate_t feed
 
   /* TODO: Add PREVENT_DANGEROUS_EXTRUDE and PREVENT_LENGTHY_EXTRUDE here */
 
+  /* ***** 1. Calculate steps for each stepper for axis and extruder ***** */
   motion.stepEventCount = 0;
   motion.steps.directionBits = STEPPER_DIRECTION_POSITIVE;
   /* Calculate absolute steps for each extruder and set direction bits accordingly */
@@ -146,11 +183,6 @@ bool MotionPlanner::addMovement(AxisCoordinates_t deltaMove, AxisFeedrate_t feed
   /* Only proceed if block is above threshold */
   if (motion.stepEventCount > MOTIONPLANNER_MINIMUM_SEGMENT_SIZE)
     {
-      motion.steps.extruder[extruder]
-      for (uint8_t i=0; i<MACHINE_NUM_EXTRUDER; i++)
-        {
-
-        }
       /* TODO: Add volumetric_multiplier and extruder_multiplier functionality here
        * motion.steps.e = deltaMove.e * volumetric_multiplier;
        * motion.steps.e = deltaMove.e * extruder_multiplier[EXTRUDER]; */
@@ -160,9 +192,13 @@ bool MotionPlanner::addMovement(AxisCoordinates_t deltaMove, AxisFeedrate_t feed
        */
 
       /* Enabling stepper was moved to stepper module */
+      /* ******** 2. Calculate and limit acceleration for this move ******** */
+      /* Calculate length*/
 
       retVal=TRUE;
     }
+  /* Save speed for next run */
+  previousSpeed = speed;
   return retVal;
 }
 /** @} doxygen end group definition */

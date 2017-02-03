@@ -19,61 +19,60 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#if (!defined MOTIONPLANNER_INCLUDE_MOTIONPLANNER_H_)
+#if (!defined MOTIONBUFFER_INCLUDE_MOTIONBUFFER_H_)
 /* Preprocessor exclusion definition */
-#define MOTIONPLANNER_INCLUDE_MOTIONPLANNER_H_
+#define MOTIONBUFFER_INCLUDE_MOTIONBUFFER_H_
 /**
- * \brief MotionPlanner include file
+ * \addtogroup MotionBuffer
+ * @{
  *
- * Include files should start with a lowercase character and use cammelCase
- * notation.
+ * Simple, almost empty module just to define and implement the motion
+ * buffer.
  *
  * \project BlueMarlin
  * \author kein0r
  *
  */
 
-
-/** \addtogroup MotionPlanner
- * @{
- */
-
 /* ******************| Inclusions |************************************ */
-#include<BlueMarlin.h>
-#include<RingBuffer.h>
 
 /* ******************| Macros |**************************************** */
-
 /**
- * Minimum number of steps for one movement. Everything with less than
- * this number of steps will be ignored as move and must be joined with
- * the next movement by the next upper layer.
- * It's possible to override default in the respective configuration file
+ * Default number of entries in #Motionplanner ringbuffer #motionbuffer.
+ * Its possible to override default in the respective configuration file
  * or by specifying the value during compile time with
- * -DMOTIONPLANNER_MINIMUM_SEGMENT_SIZE 5
+ * -DMOTIONBUFFER_MOTIONBUFFER_SIZE 32
  */
-#ifndef MOTIONPLANNER_MINIMUM_SEGMENT_SIZE
-#define MOTIONPLANNER_MINIMUM_SEGMENT_SIZE     (StepperCoordinate_t)5
+#ifndef MOTIONBUFFER_MOTIONBUFFER_SIZE
+#define MOTIONBUFFER_MOTIONBUFFER_SIZE        (uint8_t)32
 #endif
+
 
 /* ******************| Type definitions |****************************** */
 
-class MotionPlanner
+/**
+ * All information needed for one move.
+ * @note activeExtruder was moved to machine/kinematic module. This way
+ * retract one extruder while at the same time extrude with another one
+ * is possible.
+ */
+typedef struct
 {
-private:
-  WorldCoordinates_t previousSpeed;
+  StepperCoordinates_t steps;           /*!< Number of absolute steps for this move along each axis */
+  StepperCoordinate_t stepEventCount;   /*!< Maximum number of step events required to complete this block */
 
-public:
-  bool addLineMovement(AxisCoordinates_t deltaMove, WorldCoordinates_t speed, AxisFeedrate_t feedrate);
-
-};
+  StepperCoordinate_t nominalSpeed;     /*!< Nominal speed for this block, that is #stepEvenCount/time, in steps/sec */
+  StepperCoordinate_t maxEntrySpeed;    /*!< Maximum allowable junction entry speed based on speed in steps/sec */
+  StepperCoordinate_t entrySpeed;       /*!< Entry speed at previous-current block junction in steps/sec */
+} MotionBlock_t;
 
 /* ******************| External function declarations |**************** */
 
 /* ******************| External constants |**************************** */
 
 /* ******************| External variables |**************************** */
+extern RingBuffer<MotionBlock_t, MOTIONBUFFER_MOTIONBUFFER_SIZE> motionBuffer;
 
 /** @} doxygen end group definition */
-#endif /* if !defined( MOTIONPLANNER_INCLUDE_MOTIONPLANNER_H_ ) */
+#endif /* if !defined( MOTIONBUFFER_INCLUDE_MOTIONBUFFER_H_ ) */
 /* ******************| End of file |*********************************** */
