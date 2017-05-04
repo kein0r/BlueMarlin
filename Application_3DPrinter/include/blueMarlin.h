@@ -29,7 +29,7 @@
  * notation.
  *
  * \project BlueMarlin
- * \author <FULL NAME>
+ * \author kein0r
  *
  */
 
@@ -81,10 +81,10 @@
 /* TODO: To be moved to machine/Kinematik module */
 typedef float WorldCoordinate_t;
 typedef struct {
-        WorldCoordinate_t x;
-        WorldCoordinate_t y;
-        WorldCoordinate_t z;
-        WorldCoordinate_t e;
+        WorldCoordinate_t x;    /*!< x coordinate in world coordinate system given in mm */
+        WorldCoordinate_t y;    /*!< y coordinate in world coordinate system given in mm */
+        WorldCoordinate_t z;    /*!< z coordinate in world coordinate system given in mm */
+        WorldCoordinate_t e;    /*!< Extruder coordinates in mm. In contrast to x,y and z coordinates this is always in given in relative coordinates */
 } WorldCoordinates_t;
 
 /**
@@ -93,16 +93,16 @@ typedef struct {
 typedef int32_t AxisCoordinate_t;
 /**
  * Axis coordinates in steps calculated from world coordinates using
- * machine's inverse kinematic function including any mechanical related
+ * machine's inverse kinematics function including any mechanical related
  * things like
  * - steps per rotation (FULL_STEPS_PER_ROTATION)
  * - micro-steps (MICROSTEPS)
  * - pulley-teeth (PULLEY_TEETH)
  * - belt pitch (BELT_PITCH)
  * - gear-box ratio
- * For Cartesian machines inverse kinematic will only consist of above
- * values for delta and other machine more complicated inverse kinematic
- * need to be applied first.
+ * For Cartesian machines inverse kinematics will mostly be the product of
+ * above values for delta and other machine more complicated inverse kinematics
+ * need to be applied.
  */
 typedef struct {
         AxisCoordinate_t axis[MACHINE_NUM_AXIS];            /*!< Values for all axis in steps. Thus, steps, steps/second, steps/second^2, ... */
