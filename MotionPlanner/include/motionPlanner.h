@@ -61,10 +61,31 @@
 class MotionPlanner
 {
 private:
-  WorldCoordinates_t previousSpeed;
+  /**
+   * Position of the machine in world coordinates after all moves in the
+   * buffer are finished. Thus, as long as the machine is moving this is
+   * not the actual position but rather the position that is requested.
+   * @TODO Decide if to move to kinematics or machine module
+   */
+  WorldCoordinates_t worldPosition;
+
+  /**
+   * Position for each stepper motor in axis coordinates after all moves
+   * in the buffer are finished. Thus, as long as the machine is moving
+   * this is not the actual position but rather the position that is
+   * requested.
+   * @TODO Decide if to move to kinematics or machine module
+   */
+  AxisCoordinates_t axisPosition;
+
+  /**
+   * Currently active extruder
+   * @TODO Decide if to move to machine module
+   */
+  uint8_t activeExtruder = 0;
 
 public:
-  bool addLineMovement(AxisCoordinates_t deltaMove, WorldCoordinates_t speed, AxisFeedrate_t feedrate);
+  bool addLineMovement(WorldCoordinates_t deltaMove, WorldCoordinate_t feedrate);
 
 };
 

@@ -30,14 +30,17 @@
  *
  * Motion Planing
  *
- * Motion planing shall be independent of any machine kinematics. It shall only
- * act on the steps needed for the move at hand. For jerk control, however, the
- * speed of movement in world coordinates is needed too and shall be taken into
- * account for motion planing. Speed needs to be provided in world coordinates
- * because some kinematics to not possess a linear relation between world and axis
- * coordinate system.
- * Input shall therefore be DeltaSteps in AxisCoordinate_t [steps], speed in
- * WorldCoordinates_t [mm] and feedRate [steps/sec]
+ * Motion planning is one of the bigger parts. Motion planing will be done base on
+ * * Relative (delta) moves in world coordinates [mm] X_W[mm]
+ * * Feed rate, which is speed, in world coordinates F_W[mm/s]
+ * The reason for using relative world coordinates is to make the motion planner
+ * independent of the actual position of the head.
+ * Unfortunately, the motion planner can't be fully  independent of  machine's
+ * kinematics. In case of nonlinear machine kinematics motionPlanner needs to split
+ * the move into smaller pieces.
+ * The name motion planner might be a bit misleading. This module does not only
+ * take care of the movement of the head but also about the movement of the
+ * filament.
  *
  * The algorithm shall ensure that speed changes, that is jerk [mm/s] or junction
  * speed, between two moves shall not be greater than allowed maximum jerk [mm/s]
@@ -93,6 +96,7 @@
 /* ******************| Inclusions |************************************ */
 #include "MotionPlanner.h"
 #include <platform.h>
+#include <motionBuffer.h>
 #include <stdlib.h>
 
 /* ******************| Macros |**************************************** */
@@ -107,98 +111,189 @@
 /**
  * \brief Add a new movement to the motion planner
  * Adds a new movement to the head of the motion planner buffer to be
- * executed. Movements are given as relative (delta) movements in axis
- * coordinates.
- * Because this function shall be used for all kind of configurations macros
- * like X_AXIS shall not be used but instead #MACHINE_NUM_AXIS and
+ * executed. Movements are given in world coordinates. World koordinates
+ * as well as feedrate are assumed to be corrected or adapted
+ * already. This means, among other things,
+ * * Feedrate was adapted by feedrate multiplier, minimumTravelFeedrate, minimumFeedrate (for E only moves)
+ * * Feedrate was limited to maximum feedrate
+ * * Coordinates are corrected by bed leveling etc. matrix
+ *
+ * For nonlinear kinematics the move will be split into segments. It is
+ * assumed that even nonlinear kinematics are smooth functions and therefore
+ * no jerk control is applied on the segments.
+ *
+ * Because this function shall be used for all kind of machines configurations
+ * macros like X_AXIS shall not be used but instead #MACHINE_NUM_AXIS and
  * #MACHINE_NUM_EXTRUDER used instead.
  * This function is blocking if the buffer can't hold the new motion. If
- * the ringbuffer is full the function will wait until space is available.
+ * the ringbuffer is full the function will will call Idle() until buffer is
+ * free again.
  *
- * This function is split into the following parts
- * 1. Calculate steps for each stepper for axis and extruder
- * 2. Calculate and limit speed acceleration for this move
+ * This function is split into the following parts.
+ * 1. Calculate base values for this move: Length of move in world coordinates [mm]
+ * number of segments and time for each segment [s]
+ * 2. For all segments of this move: Calculate the necessary steps using inverse machine
+ * kinematics
  * 3. Calculate and limit acceleration for this move
  * 4. Calculate and limit jerk, that is speed changes between to consecutive blocks, for this move
- * @param[in] deltaMove Incremental move in axis coordinates
- * X_A.
- * @param[in] feedrate Feedrate, that is speed, for this move in steps per
- * second
- * @return TRUE if movement was successfully added to #motionBuffer. FALSE
- * if movement was to small to be added.
- * @note Replaces function plan_buffer_line
+ * @param[in] targetPositionW Absolute target position of head in world coordinates
+ * X_W [mm] and relative extruder coordinates E_W [mm].
+ * @param[in] feedrateW Feedrate, that is speed, for this move in mm/s (f_W [mm/s])
+ * @return TRUE
+ * @note Replaces function plan_buffer_line and prepare_move_delta
  */
-bool MotionPlanner::addLineMovement(AxisCoordinates_t deltaMove, WorldCoordinates_t speed, AxisFeedrate_t feedrate)
+bool MotionPlanner::addLineMovement(WorldCoordinates_t targetPositionW, WorldCoordinate_t feedrateW)
 {
-  bool retVal = FALSE;
+  bool retVal = RESULT_NOT_OK;
+  WorldCoordinates_t segmentMoveW;
+  AxisCoordinates_t stepsA, segmentStepsA;
   MotionBlock_t motion;
-  /* If the buffer is full: good! That means we are well ahead of the
-   * machine. Rest here until there is room in the buffer.
+
+  /* Step 1: Calculate base values for this move: Length of move in world coordinates [mm] number
+   * of segments and time for each segment [s] */
+  /* First calculate the length for the complete move */
+  segmentMoveW.x = (targetPositionW.x - worldPosition.x);
+  segmentMoveW.y = (targetPositionW.y - worldPosition.y);
+  segmentMoveW.z = (targetPositionW.z - worldPosition.z);
+  segmentMoveW.e = (targetPositionW.e - worldPosition.e);
+  WorldCoordinate_t totalTravelLengthW = sqrt(sq(segmentMoveW.x) + sq(segmentMoveW.y) + sq(segmentMoveW.z));
+
+  int segments = max(1, parameter.segmentsPerSecond * totalTravelLengthW * feedrateW);
+  float segmentTravelTime = totalTravelLengthW / feedrateW / segments;
+
+  /* All segments are of equal length. Therefore we calculate it once now that we know how many
+   * segments we are going to do. */
+  segmentMoveW.x = segmentMoveW.x / segments;
+  segmentMoveW.y = segmentMoveW.y / segments;
+  segmentMoveW.z = segmentMoveW.z / segments;
+  segmentMoveW.e = segmentMoveW.e / segments;
+
+  /* Iterate over all segments of this move. Iterator starts from one for easier
+   * calculation later on.
    */
-  while (!motionBuffer.available()) Idle();
-
-  /* TODO: Add PREVENT_DANGEROUS_EXTRUDE and PREVENT_LENGTHY_EXTRUDE here */
-
-  /* ***** 1. Calculate steps for each stepper for axis and extruder ***** */
-  motion.stepEventCount = 0;
-  motion.steps.directionBits = STEPPER_DIRECTION_POSITIVE;
-  /* Calculate absolute steps for each extruder and set direction bits accordingly */
-  for (uint8_t i=0; i<MACHINE_NUM_EXTRUDER; i++)
+  for (int segment=1; segment <= segments; segment++)
     {
-      /* Transform from axis to stepper coordinates */
-      motion.steps[i] = abs(deltaMove.extruder[i]);
-      /* Calculate direction bits for this move */
-      if (deltaMove.extruder[i] < 0)
+      /* Step 2. For all segments of this move: Calculate the necessary steps using inverse
+       *  machine kinematics */
+      /* We directly increment the position pretending that the move was already done */
+      worldPosition.x += segmentMoveW.x;
+      worldPosition.y += segmentMoveW.y;
+      worldPosition.z += segmentMoveW.z;
+      worldPosition.e += segmentMoveW.e;
+
+      /* Transform from world into axis coordinate systems */
+      kinematic.inverseMachineKinematic(worldPosition, &segmentStepsA, activeExtruder);
+
+      motion.stepEventCount = 0;
+      motion.steps.directionBits = STEPPER_DIRECTION_POSITIVE;
+
+      /* Calculate the delta steps. Extruder coordinates are always relative. Therefore
+       * no delta needs to be calculated */
+      for (uint8_t i=0; i<MACHINE_NUM_AXIS; i++)
         {
-          Stepper_setStepDirectionNegative(motion.steps.directionBits, i);
+	  segmentStepsA.axis[i] = segmentStepsA.axis[i] - axisPosition.axis[i];
+	  /* Transform from axis to stepper coordinates */
+	  motion.steps[i] = abs(segmentStepsA.axis[i]);
+	  /* Calculate direction bits for this move */
+	  if (segmentStepsA.axis[i] < 0)
+	    {
+	      Stepper_setStepDirectionNegative(motion.steps.directionBits, i);
+	    }
+	  /* Calculate maximum number of steps needed for this move */
+	  motion.stepEventCount = max(motion.stepEventCount, motion.steps[i]);
         }
-      /* Calculate maximum number of steps needed for this move */
-      motion.stepEventCount = max(motion.stepEventCount, motion.steps[i]);
-    }
 
-  /* stepEvenCount so far now only contains extruder steps, check and adjust feedrate
-   * if this is a travel only move (without extrusion) */
-  if (motion.stepEventCount == 0)
-    {
-      max(feedrate, parameter.minimumTravelFeedrate);
-    }
-  else
-    {
-      max(feedrate, parameter.minimumFeedrate);
-    }
-  /* Calculate absolute steps for each axis stepper and set direction bits accordingly */
-  for (uint8_t i=0; i<MACHINE_NUM_AXIS; i++)
-    {
-      /* Transform from axis to stepper coordinates */
-      motion.steps[i] = abs(deltaMove.axis[i]);
-      /* Calculate direction bits for this move */
-      if (deltaMove.axis[i] < 0)
-        {
-          Stepper_setStepDirectionNegative(motion.steps.directionBits, i);
-        }
-      /* Calculate maximum number of steps needed for this move */
-      motion.stepEventCount = max(motion.stepEventCount, motion.steps[i]);
-    }
 
-  /* Only proceed if block is above threshold */
-  if (motion.stepEventCount > MOTIONPLANNER_MINIMUM_SEGMENT_SIZE)
-    {
-      /* TODO: Add volumetric_multiplier and extruder_multiplier functionality here
-       * motion.steps.e = deltaMove.e * volumetric_multiplier;
-       * motion.steps.e = deltaMove.e * extruder_multiplier[EXTRUDER]; */
 
-      /* TODO: Add fan speed control here
-       * for (uint8_t i = 0; i < FAN_COUNT; i++) block->fan_speed[i] = fanSpeeds[i];
+      /* If the buffer is full: good! That means we are well ahead of the
+       * machine. Rest here until there is room in the buffer.
+       * @todo: move to the end of calculation right before element is added
+       * to buffer
        */
+      while (!motionBuffer.available()) Idle();
 
-      /* Enabling stepper was moved to stepper module */
-      /* ******** 2. Calculate and limit acceleration for this move ******** */
-      /* Calculate length*/
 
-      retVal=TRUE;
-    }
+
+
+
+    /* TODO: Add PREVENT_DANGEROUS_EXTRUDE and PREVENT_LENGTHY_EXTRUDE here or better one level above */
+
+    /* ***** 1. Calculate steps for each stepper for axis and extruder ***** */
+    motion.stepEventCount = 0;
+    motion.steps.directionBits = STEPPER_DIRECTION_POSITIVE;
+    /* Calculate absolute steps for each extruder and set direction bits accordingly */
+    for (uint8_t i=0; i<MACHINE_NUM_EXTRUDER; i++)
+      {
+	/* Transform from axis to stepper coordinates */
+	motion.steps[i] = abs(deltaMoveW.extruder[i]);
+	/* Calculate direction bits for this move */
+	if (deltaMove.extruder[i] < 0)
+	  {
+	    Stepper_setStepDirectionNegative(motion.steps.directionBits, i);
+	  }
+	/* Calculate maximum number of steps needed for this move */
+	motion.stepEventCount = max(motion.stepEventCount, motion.steps[i]);
+      }
+
+    /* stepEvenCount so far now only contains extruder steps, check and adjust feedrate
+     * if this is a travel only move (without extrusion) */
+    if (motion.stepEventCount == 0)
+      {
+	max(feedrate, parameter.minimumTravelFeedrate);
+      }
+    else
+      {
+	max(feedrate, parameter.minimumFeedrate);
+      }
+    /* Calculate absolute steps for each axis stepper and set direction bits accordingly */
+    for (uint8_t i=0; i<MACHINE_NUM_AXIS; i++)
+      {
+	/* Transform from axis to stepper coordinates */
+	motion.steps[i] = abs(deltaMove.axis[i]);
+	/* Calculate direction bits for this move */
+	if (deltaMove.axis[i] < 0)
+	  {
+	    Stepper_setStepDirectionNegative(motion.steps.directionBits, i);
+	  }
+	/* Calculate maximum number of steps needed for this move */
+	motion.stepEventCount = max(motion.stepEventCount, motion.steps[i]);
+      }
+
+    /* Only proceed if block steps are above threshold */
+    if (motion.stepEventCount > MOTIONPLANNER_MINIMUM_SEGMENT_SIZE)
+      {
+	/* TODO: Add volumetric_multiplier and extruder_multiplier functionality here
+	 * motion.steps.e = deltaMoveW.e * volumetric_multiplier;
+	 * motion.steps.e = deltaMove.e * extruder_multiplier[EXTRUDER]; */
+
+	/* TODO: Add fan speed control here
+	 * for (uint8_t i = 0; i < FAN_COUNT; i++) block->fan_speed[i] = fanSpeeds[i];
+	 */
+
+	/* Enabling stepper was moved to stepper module */
+	/* ******** 2. Calculate and limit speed for this move ******** */
+
+	/* Calculate overall length [steps] of this move */
+	AxisCoordinate_t travelLength = 0;
+	for (uint8_t i=0; i<MACHINE_NUM_AXIS; i++)
+	  {
+	    travelLength += deltaMove.axis[i] * deltaMove.axis[i];
+	  }
+	travelLength = sqrt(travelLength);
+	/* Calculate the speed for each axis [steps/sec] */
+	AxisCoordinates_t travelSpeed;
+	for (uint8_t i=0; i<MACHINE_NUM_AXIS; i++)
+	  {
+	    travelSpeed.axis[i] = feedrate * deltaMove.axis[i] / travelLength;
+	  }
+	/* Finally, to be executed, add the block to motion buffer. Because we waited for
+	 * space earlier, the motion will always be added */
+	motionBuffer.write(motion);
+	previousTravelSpeed = travelSpeed;
+	retVal = RESULT_OK;
+      }
+    } // for (int i=0; i< segments; i++)
   /* Save speed for next run */
-  previousSpeed = speed;
   return retVal;
 }
 /** @} doxygen end group definition */
