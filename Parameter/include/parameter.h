@@ -46,6 +46,9 @@
  * Each parameter shall be set during initialization of the module which
  * defines the default value for the respective parameter.
  * All parameter are grouped in a struct for easier storage in EEPROM.
+ * @note Limiting values for all non-linear kinematics, which needs to be
+ * transformed by inverse kinematic, are transformed at the center,
+ * that is 0,0,0 of the machine.
  */
 typedef struct {
     uint8_t version;
@@ -53,6 +56,7 @@ typedef struct {
     AxisCoordinates_t volumetric_multiplier[MACHINE_NUM_EXTRUDER];     /*!< Extrude factor (in percent) for each extruder individually */
     AxisCoordinates_t minimumFeedrate;                                 /*!< Minumum Feedrate for moves in steps/sec */
     AxisCoordinates_t minimumTravelFeedrate;                           /*!< Minumum Feedrate for travel moves in steps/sec */
+    uint16_t segmentsPerSecond;                                        /*!< Number of segment a linear move will be split into per second of movement */
 } Parameter_t;
 
 extern Parameter_t parameter;
