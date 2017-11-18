@@ -156,10 +156,15 @@ bool MotionPlanner::addLineMovement(WorldCoordinates_t targetPositionW, WorldCoo
   segmentMoveW.y = (targetPositionW.y - worldPosition.y);
   segmentMoveW.z = (targetPositionW.z - worldPosition.z);
   segmentMoveW.e = (targetPositionW.e - worldPosition.e);
+  /* Calculate length, travel time and speed for for this move.
+   * Because this is a line movement in world coordinates, those values are constant during the move
+   * and therefore calculated only once */
   WorldCoordinate_t totalTravelLengthW = sqrt(sq(segmentMoveW.x) + sq(segmentMoveW.y) + sq(segmentMoveW.z));
+  float totalTravelTime = totalTravelLengthW / feedrateW;
+  float travelSpeedW = totalTravelLengthW / totalTravelTime;
 
-  int segments = max(1, parameter.segmentsPerSecond * totalTravelLengthW * feedrateW);
-  float segmentTravelTime = totalTravelLengthW / feedrateW / segments;
+  int segments = max(1, parameter.segmentsPerSecond * totalTravelTime);
+  float segmentTravelTime = totalTravelTime / segments;
 
   /* All segments are of equal length. Therefore we calculate it once now that we know how many
    * segments we are going to do. */
@@ -202,62 +207,42 @@ bool MotionPlanner::addLineMovement(WorldCoordinates_t targetPositionW, WorldCoo
 	  /* Calculate maximum number of steps needed for this move */
 	  motion.stepEventCount = max(motion.stepEventCount, motion.steps[i]);
         }
+      for (uint8_t i=0; i<MACHINE_NUM_EXTRUDER; i++)
+	{
+	  /* Transform from axis to stepper coordinates */
+	  motion.steps[i] = abs(segmentStepsA.extruder[i]);
+	  /* Calculate direction bits for this move */
+	  if (segmentStepsA.extruder[i] < 0)
+	    {
+	      Stepper_setStepDirectionNegative(motion.steps.directionBits, i);
+	    }
+	  /* Calculate maximum number of steps needed for this move */
+	  motion.stepEventCount = max(motion.stepEventCount, motion.steps[i]);
+	}
+      /* Only proceed if block steps are above threshold */
+      if (motion.stepEventCount > MOTIONPLANNER_MINIMUM_SEGMENT_SIZE)
+        {
+
+	  motion.nominalRate = segmentTravelTime / motion.stepEventCount;
+
+	  /* @todo: Rpelace with correct code. For movment smothing (i.e. jerk control)
+	   * is ont applied.*/
+	  motion.
+	  /* If the buffer is full: good! That means we are well ahead of the
+	   * machine. Rest here until there is room in the buffer.
+	  */
+	  while (!motionBuffer.available()) Idle();
+
+	  motionBuffer.write(motion);
+	  retVal = RESULT_OK;
+        }
+    }
+  return retVal;
+}
 
 
 
-      /* If the buffer is full: good! That means we are well ahead of the
-       * machine. Rest here until there is room in the buffer.
-       * @todo: move to the end of calculation right before element is added
-       * to buffer
-       */
-      while (!motionBuffer.available()) Idle();
 
-
-
-
-
-    /* TODO: Add PREVENT_DANGEROUS_EXTRUDE and PREVENT_LENGTHY_EXTRUDE here or better one level above */
-
-    /* ***** 1. Calculate steps for each stepper for axis and extruder ***** */
-    motion.stepEventCount = 0;
-    motion.steps.directionBits = STEPPER_DIRECTION_POSITIVE;
-    /* Calculate absolute steps for each extruder and set direction bits accordingly */
-    for (uint8_t i=0; i<MACHINE_NUM_EXTRUDER; i++)
-      {
-	/* Transform from axis to stepper coordinates */
-	motion.steps[i] = abs(deltaMoveW.extruder[i]);
-	/* Calculate direction bits for this move */
-	if (deltaMove.extruder[i] < 0)
-	  {
-	    Stepper_setStepDirectionNegative(motion.steps.directionBits, i);
-	  }
-	/* Calculate maximum number of steps needed for this move */
-	motion.stepEventCount = max(motion.stepEventCount, motion.steps[i]);
-      }
-
-    /* stepEvenCount so far now only contains extruder steps, check and adjust feedrate
-     * if this is a travel only move (without extrusion) */
-    if (motion.stepEventCount == 0)
-      {
-	max(feedrate, parameter.minimumTravelFeedrate);
-      }
-    else
-      {
-	max(feedrate, parameter.minimumFeedrate);
-      }
-    /* Calculate absolute steps for each axis stepper and set direction bits accordingly */
-    for (uint8_t i=0; i<MACHINE_NUM_AXIS; i++)
-      {
-	/* Transform from axis to stepper coordinates */
-	motion.steps[i] = abs(deltaMove.axis[i]);
-	/* Calculate direction bits for this move */
-	if (deltaMove.axis[i] < 0)
-	  {
-	    Stepper_setStepDirectionNegative(motion.steps.directionBits, i);
-	  }
-	/* Calculate maximum number of steps needed for this move */
-	motion.stepEventCount = max(motion.stepEventCount, motion.steps[i]);
-      }
 
     /* Only proceed if block steps are above threshold */
     if (motion.stepEventCount > MOTIONPLANNER_MINIMUM_SEGMENT_SIZE)
@@ -288,13 +273,12 @@ bool MotionPlanner::addLineMovement(WorldCoordinates_t targetPositionW, WorldCoo
 	  }
 	/* Finally, to be executed, add the block to motion buffer. Because we waited for
 	 * space earlier, the motion will always be added */
-	motionBuffer.write(motion);
+
 	previousTravelSpeed = travelSpeed;
-	retVal = RESULT_OK;
+
       }
     } // for (int i=0; i< segments; i++)
   /* Save speed for next run */
-  return retVal;
 }
 /** @} doxygen end group definition */
 /* ******************| End of file |*********************************** */

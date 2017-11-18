@@ -50,20 +50,36 @@
 
 /* ******************| Type definitions |****************************** */
 
+typedef uint8_t MotionBlockStatus_t;
+
 /**
  * All information needed for one move.
- * @note activeExtruder was moved to machine/kinematic module. This way
+ * @note activeExtruder was removed and is now part of steps. This way
  * retract one extruder while at the same time extrude with another one
  * is possible.
  */
 typedef struct
 {
-  StepperCoordinates_t steps;           /*!< Number of absolute steps for this move along each axis */
+  MotionBlockStatus_t status;
+
+  /* Values used by the Bresenham algorithm for tracing the line. Produced by
+   * #MotionPlanner, consumed by #Stepper */
+  StepperCoordinates_t steps;           /*!< Number of absolute steps for this move along each axis and for each extruder */
   StepperCoordinate_t stepEventCount;   /*!< Maximum number of step events required to complete this block */
 
-  StepperCoordinate_t nominalSpeed;     /*!< Nominal speed for this block, that is #stepEvenCount/time, in steps/sec */
+  StepperCoordinate_t initialRate;      /*!< */
+  StepperCoordinate_t accelerateUntil;  /*!< */
+  StepperCoordinate_t accelerationRate; /*!< */
+
+  StepperCoordinate_t develerateAfter;  /*!< */
+  StepperCoordinate_t finalRate;        /*!< */
+
+
+  StepperCoordinate_t nominalRate;      /*!< Nominal speed for this block, that is #stepEvenCount/time, in steps/sec */
   StepperCoordinate_t maxEntrySpeed;    /*!< Maximum allowable junction entry speed based on speed in steps/sec */
   StepperCoordinate_t entrySpeed;       /*!< Entry speed at previous-current block junction in steps/sec */
+
+  /* Values used for internal calculation */
 } MotionBlock_t;
 
 /* ******************| External function declarations |**************** */
